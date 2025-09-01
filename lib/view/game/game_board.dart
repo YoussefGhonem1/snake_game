@@ -246,44 +246,49 @@ class _GameBoardState extends State<GameBoard>
       ),
     );
   }
+@override
+Widget build(BuildContext context) {
+  gameViewModel.onGameOver = _onGameOver;
+  gameViewModel.onGameCompleted = _onGameCompleted;
 
-  @override
-  Widget build(BuildContext context) {
-    gameViewModel.onGameOver = _onGameOver;
-    gameViewModel.onGameCompleted = _onGameCompleted;
+  return Consumer<GameViewModel>(
+    builder: (context, provider, _) {
+      // -->> التحقق من حالة التحميل <<--
+      if (!provider.isGameInitialized) {
+        // إذا لم تكن اللعبة جاهزة، اعرض علامة التحميل
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    return Consumer<GameViewModel>(
-      builder: (context, provider, _) {
-        return GestureDetector(
-          onVerticalDragUpdate: (details) {
-            if (!GameHelper.instance.isSwipe) return;
-            if (details.delta.dy > 0) {
-              provider.changeDirection('down');
-            } else if (details.delta.dy < 0) {
-              provider.changeDirection('up');
-            }
-          },
-          onHorizontalDragUpdate: (details) {
-            if (!GameHelper.instance.isSwipe) return;
-            if (details.delta.dx > 0) {
-              provider.changeDirection('right');
-            } else if (details.delta.dx < 0) {
-              provider.changeDirection('left');
-            }
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: ColorHelper.instance.gameBackgroundGradient,
-            ),
-            child: Stack(
-              children: [_buildGameArea(provider), _buildUI(provider)],
-            ),
+      // إذا كانت اللعبة جاهزة، اعرض لوحة اللعب
+      return GestureDetector(
+        onVerticalDragUpdate: (details) {
+          if (!GameHelper.instance.isSwipe) return;
+          if (details.delta.dy > 0) {
+            provider.changeDirection('down');
+          } else if (details.delta.dy < 0) {
+            provider.changeDirection('up');
+          }
+        },
+        onHorizontalDragUpdate: (details) {
+          if (!GameHelper.instance.isSwipe) return;
+          if (details.delta.dx > 0) {
+            provider.changeDirection('right');
+          } else if (details.delta.dx < 0) {
+            provider.changeDirection('left');
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: ColorHelper.instance.gameBackgroundGradient,
           ),
-        );
-      },
-    );
-  }
-
+          child: Stack(
+            children: [_buildGameArea(provider), _buildUI(provider)],
+          ),
+        ),
+      );
+    },
+  );
+}
   Widget _buildGameArea(GameViewModel provider) {
     return Positioned(
       left: provider.gamePadding.left,
