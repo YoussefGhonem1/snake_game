@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SoundHelper {
   static final SoundHelper _instance = SoundHelper._internal();
   static SoundHelper get instance => _instance;
-  
+
   late AudioPlayer _audioPlayer;
   bool _soundEnabled = true;
-  
+
   SoundHelper._internal() {
     _audioPlayer = AudioPlayer();
     initialize();
@@ -31,10 +31,12 @@ class SoundHelper {
   // Play sound effects
   Future<void> playEatSound() async {
     if (!_soundEnabled) return;
-    
+
     try {
       // Play sound immediately without stopping (for instant response)
-      _audioPlayer.play(AssetSource('sounds/coin-collect-retro-8-bit-sound-effect-145251.wav'));
+      _audioPlayer.play(
+        AssetSource('sounds/coin-collect-retro-8-bit-sound-effect-145251.wav'),
+      );
     } catch (e) {
       // Fallback to system sound or ignore
       print('Sound error: $e');
@@ -44,7 +46,7 @@ class SoundHelper {
   Future<void> playGameOverSound() async {
     if (!_soundEnabled) return;
     try {
-      await _audioPlayer.play(AssetSource('sounds/game_over.mp3'));
+      await _audioPlayer.play(AssetSource('sounds/game over.mp3'));
     } catch (e) {
       print('Sound error: $e');
     }
@@ -54,7 +56,7 @@ class SoundHelper {
     if (!_soundEnabled) return;
     try {
       // Assuming 'level_win.mp3' is the correct asset.
-      await _audioPlayer.play(AssetSource('sounds/level_win.mp3'));
+      await _audioPlayer.play(AssetSource('sounds/level_win.mp3.mp3'));
     } catch (e) {
       print('Sound error: $e');
     }
