@@ -311,6 +311,8 @@ class GameViewModel extends ChangeNotifier {
   void _addScore(int points) {
     _numericScore += points;
     score = _numericScore.toString().padLeft(6, '0');
+      print("--------------------------------"); // youssef -just for check 
+      print("Score updated to: $score"); // youssef -just for check 
   }
 
   void _updateProgress() {
