@@ -28,52 +28,48 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+ @override
+Widget build(BuildContext context) {
+  double height = MediaQuery.of(context).size.height;
+  double width = MediaQuery.of(context).size.width;
+  
+  // لا يوجد ChangeNotifierProvider هنا
+  // الشاشة ستستخدم النسخة المشتركة تلقائيًا
 
-    return ChangeNotifierProvider(
-      create: (context) => GameViewModel(),
-      child: Consumer<GameViewModel>(
-        builder: (context, provider, _) {
-          bool isLevelMode = widget.startLevelIndex != null;
-          int? levelIndex = isLevelMode ? widget.startLevelIndex : null;
+  bool isLevelMode = widget.startLevelIndex != null;
+  int? levelIndex = isLevelMode ? widget.startLevelIndex : null;
 
-          return Scaffold(
-            body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFF0A0A0A),
-                    const Color(0xFF1A1A2E),
-                    const Color(0xFF16213E),
-                  ],
-                ),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: height * 0.05),
-                  child: Center(
-                    child: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: GameBoard(
-                        height: height * 0.65, // Reduced for better centering
-                        width: width * 0.95, // Slight margin on sides
-                        startIndex: levelIndex,
-                      ),
-                    ),
-                  ),
-                ),
+  return Scaffold(
+    body: Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            const Color(0xFF0A0A0A),
+            const Color(0xFF1A1A2E),
+            const Color(0xFF16213E),
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: height * 0.05),
+          child: Center(
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: GameBoard(
+                height: height * 0.65,
+                width: width * 0.95,
+                startIndex: levelIndex,
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

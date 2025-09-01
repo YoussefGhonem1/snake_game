@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snake_game/core/helpers/unity_ads_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
@@ -14,6 +13,9 @@ enum GameMode {
 }
 
 class GameViewModel extends ChangeNotifier {
+   GameViewModel() {
+    loadGameProgress();
+  }
   int _rows = 20;
   int _columns = 20;
   double _cellSize = 20.0;
@@ -22,8 +24,9 @@ class GameViewModel extends ChangeNotifier {
   GameMode currentGameMode = GameMode.levelMode;
   int maxUnlockedLevel = 1;
   int highScore = 0;
+  int totalPoints = 0;
   bool hasNewHighScore = false;
-
+bool isGameInitialized = false; 
   // Visual effects and animations
   bool isFoodSmall = true;
   bool isBigScoreCellSmall = true;
@@ -97,20 +100,21 @@ class GameViewModel extends ChangeNotifier {
     double cellHeight = availableSize.height / _rows;
     _cellSize = min(cellWidth, cellHeight).floorToDouble();
   }
-
-  void initializeGame(
+void initializeGame(
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
   }) {
+    // الخطوة 1: أخبر الواجهة بأن اللعبة في وضع التحميل
+    isGameInitialized = false;
+    notifyListeners(); // مهم جدًا لإظهار شاشة التحميل فورًا
+
     _gamePadding = gamePaddings;
     _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
 
-    // The currentGameMode is already set by the time we get here.
-    // We just need to set the starting level index.
     currentLevelIndex = startLevelIndex ?? 0;
 
-    // Define the base levels that are used for both modes
+    // تعريف المستويات الأساسية
     List<GameLevel> baseLevels = [
       GameLevel(
         levelNumber: 1,
@@ -144,15 +148,13 @@ class GameViewModel extends ChangeNotifier {
       ),
     ];
 
-    // If in free mode, override the max score to be effectively infinite.
-    // Otherwise, use the standard levels for level mode.
     if (currentGameMode == GameMode.freeMode) {
       gameLevels = baseLevels
           .map(
             (level) => GameLevel(
               levelNumber: level.levelNumber,
               levelBarriers: level.levelBarriers,
-              maxScore: 999999999999999999, // Effectively infinite score
+              maxScore: 999999999999999999, // نقاط لا نهائية
               snake: level.snake,
             ),
           )
@@ -162,10 +164,16 @@ class GameViewModel extends ChangeNotifier {
     }
 
     maxLevels = gameLevels.length;
-    loadGameProgress().then((_) {
-      _initializeLevel();
-      startGame();
-    });
+    
+    // الخطوة 2: تهيئة بيانات المستوى (هذا سيقوم بإعطاء قيمة للمتغير _snake)
+    _initializeLevel();
+    
+    // الخطوة 3: بدء اللعبة
+    startGame();
+
+    // الخطوة 4: أخبر الواجهة بأن التحميل انتهى واللعبة جاهزة للعرض
+    isGameInitialized = true;
+    notifyListeners(); // مهم جدًا لإخفاء شاشة التحميل وإظهار اللعبة
   }
 
   void _initializeLevel() {
@@ -424,21 +432,27 @@ class GameViewModel extends ChangeNotifier {
   Future<void> loadGameProgress() async {
     final prefs = await SharedPreferences.getInstance();
     highScore = prefs.getInt('highScore') ?? 0;
+     totalPoints = prefs.getInt('totalPoints') ?? 0;
     maxUnlockedLevel = prefs.getInt('maxUnlockedLevel') ?? 1;
     notifyListeners();
   }
 
-  Future<void> saveGameProgress() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('highScore', highScore);
-    if (currentGameMode == GameMode.levelMode) {
-      if (currentLevelProgressInPercentage >= 1.0 &&
-          currentLevelIndex + 2 > maxUnlockedLevel) {
-        maxUnlockedLevel = (currentLevelIndex + 2).clamp(1, maxLevels + 1);
-        await prefs.setInt('maxUnlockedLevel', maxUnlockedLevel);
-      }
+Future<void> saveGameProgress() async {
+  final prefs = await SharedPreferences.getInstance();
+  totalPoints += _numericScore;
+  await prefs.setInt('totalPoints', totalPoints);
+  if (_numericScore > highScore) {
+    highScore = _numericScore;
+  }
+  await prefs.setInt('highScore', highScore); 
+  if (currentGameMode == GameMode.levelMode) {
+    if (currentLevelProgressInPercentage >= 1.0 &&
+        currentLevelIndex + 2 > maxUnlockedLevel) {
+      maxUnlockedLevel = (currentLevelIndex + 2).clamp(1, maxLevels + 1);
+      await prefs.setInt('maxUnlockedLevel', maxUnlockedLevel);
     }
   }
+}
 
   String getFormattedHighScore() {
     return highScore.toString().padLeft(6, '0');
