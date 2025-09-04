@@ -20,8 +20,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-       final prefs = await SharedPreferences.getInstance();
-     await prefs.clear();
+      // final prefs = await SharedPreferences.getInstance();
+       //await prefs.clear();
     EasyLocalization.ensureInitialized();
 
     await Firebase.initializeApp(
