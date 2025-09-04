@@ -19,9 +19,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   try {
-    WidgetsFlutterBinding.ensureInitialized();
-       final prefs = await SharedPreferences.getInstance();
-     await prefs.clear();
+   // WidgetsFlutterBinding.ensureInitialized();
+  //  final prefs = await SharedPreferences.getInstance();
+   // await prefs.clear();
     EasyLocalization.ensureInitialized();
 
     await Firebase.initializeApp(
@@ -60,6 +60,7 @@ void main() async {
     // Run app with error handling
     runApp(
       MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: Center(
             child: Column(
