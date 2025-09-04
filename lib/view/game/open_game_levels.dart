@@ -24,13 +24,8 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
   @override
   void initState() {
     super.initState();
-    // Setup view model and load initial data here
     gameScreenViewModel = Provider.of<GameViewModel>(context, listen: false);
-    gameScreenViewModel.gameLevels = getOpenGameLevels();
     gameScreenViewModel.loadGameProgress();
-
-    // Load Unity Ad
-    // UnityAds.load(placementId: UnityAdsHelper.interstitialId);
   }
 
   @override
@@ -101,6 +96,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                   ],
                 ),
               ),
+
               // Modern grid with improved spacing
               Expanded(
                 child: GridView.builder(
@@ -108,7 +104,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                     horizontal: 30,
                     vertical: 20,
                   ),
-                  itemCount: 5,
+                  itemCount: gameScreenViewModel.maxLevels,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     childAspectRatio: 1.0,
@@ -130,6 +126,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
   getLevelWidget(BuildContext context, int index) {
     // Use the new enhanced score system for level unlocking
     bool isLevelUnlocked = index < gameScreenViewModel.maxUnlockedLevel;
+    //bool isLevelUnlocked =true;
 
     // In free mode, show all unlocked levels; in level mode, use traditional progression
     if (!isLevelUnlocked && (_isFreeMode || index > 0)) {
