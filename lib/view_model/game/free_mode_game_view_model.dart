@@ -38,7 +38,6 @@ class FreeModeGameViewModel extends ChangeNotifier {
   bool _isPaused = false;
   Timer? _timer;
   int _movementCounter = 0; // Counter for body image alternation
-
   late GamePadding _gamePadding;
   List<List<Offset>> barriers = [];
   List<GameLevel> gameLevels = [];
@@ -398,11 +397,10 @@ class FreeModeGameViewModel extends ChangeNotifier {
     int maxScore = 0;
 
     // Check scores for all 20 levels (0-19)
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i <200 ; i++) {
       int levelScore = prefs.getInt('levelHighScore_$i') ?? 0;
-      if (levelScore > maxScore) {
-        maxScore = levelScore;
-      }
+        maxScore = maxScore + levelScore;
+      
     }
 
     return maxScore;

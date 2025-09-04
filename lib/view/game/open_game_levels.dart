@@ -161,13 +161,29 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                   ),
                 ],
               ),
-              child: Text(
-                "${index + 1}",
-                style: TextStyle(
-                  color: colorHelper.secondary.withOpacity(0.7),
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "${index + 1}",
+                    style: TextStyle(
+                      color: colorHelper.secondary.withOpacity(0.7),
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 14),
+                  Text(
+                    "${context.tr('score')}: ${gameScreenViewModel.gameLevels[index].maxScore}",
+                    style: TextStyle(
+                      color: colorHelper.appOnButtonSecondColor.withOpacity(
+                        0.8,
+                      ),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
             Positioned(
@@ -286,53 +302,33 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                   );
                 },
               )
-            : Text(
-                "${index + 1}",
-                style: TextStyle(
-                  color: colorHelper.appOnButtonSecondColor,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${index + 1}",
+                        style: TextStyle(
+                          color: colorHelper.appOnButtonSecondColor,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  
+                        SizedBox(height: 4),
+                        Text(
+                           "${context.tr('score')}: ${gameScreenViewModel.gameLevels[index].maxScore}",
+                          style: TextStyle(
+                            color: colorHelper.appOnButtonSecondColor
+                                .withOpacity(0.8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      
+                    ],
+                  ),
       ),
     );
-  }
-
-  getOpenGameLevels() {
-    _gameLevels = [
-      GameLevel(
-        levelNumber: 1,
-        levelBarriers: [gameScreenViewModel.getBarriersLevelOne()],
-        maxScore: 25000,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 2,
-        levelBarriers: [gameScreenViewModel.getBarriersLevelTwo()],
-        maxScore: 30000,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 3,
-        levelBarriers: [gameScreenViewModel.getBarriersLevelThree()],
-        maxScore: 35000,
-        snake: List.generate(4, (index) => Offset(2, (6 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 4,
-        levelBarriers: [gameScreenViewModel.getBarriersLevelFour()],
-        maxScore: 40000,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 5,
-        levelBarriers: [gameScreenViewModel.getBarriersLevelFive()],
-        maxScore: 45000,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-    ];
-
-    return _gameLevels;
   }
 
   lockedLevelMessage(BuildContext gameContext, int index) async {

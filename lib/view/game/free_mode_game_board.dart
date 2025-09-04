@@ -745,7 +745,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
           const SizedBox(width: 24),
           _buildScoreDisplay(
             context.tr('best_score'),
-            provider.getFormattedHighScore(),
+            provider.getFormattedLevelHighScore(provider.currentLevelIndex),
           ),
           const Spacer(), // Pushes the pause button to the right
           GestureDetector(
