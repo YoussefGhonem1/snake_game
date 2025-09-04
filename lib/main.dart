@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/core/helpers/language_helper.dart';
@@ -19,6 +20,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
+       final prefs = await SharedPreferences.getInstance();
+     await prefs.clear();
     EasyLocalization.ensureInitialized();
 
     await Firebase.initializeApp(

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snake_game/core/helpers/unity_ads_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
@@ -14,6 +13,11 @@ enum GameMode {
 }
 
 class GameViewModel extends ChangeNotifier {
+
+   GameViewModel() {
+    loadGameProgress();
+    _initializeLevelsData();
+  }
   int _rows = 20;
   int _columns = 20;
   double _cellSize = 20.0;
@@ -23,7 +27,7 @@ class GameViewModel extends ChangeNotifier {
   int maxUnlockedLevel = 1;
   int highScore = 0;
   bool hasNewHighScore = false;
-
+   bool isGameInitialized = false; 
   // Visual effects and animations
   bool isFoodSmall = true;
   bool isBigScoreCellSmall = true;
@@ -35,12 +39,16 @@ class GameViewModel extends ChangeNotifier {
   AnimationController? nextLevelAnimationController;
 
   final Duration _baseDuration = const Duration(milliseconds: 200);
-  Duration get _currentDuration => Duration(
-    milliseconds: max(
-      80,
-      _baseDuration.inMilliseconds - (currentLevelIndex * 15),
-    ),
-  );
+Duration get _currentDuration {
+    int dynamicReduction = (currentLevelIndex * 3); 
+
+    return Duration(
+      milliseconds: max(
+        75, 
+        _baseDuration.inMilliseconds - dynamicReduction,
+      ),
+    );
+  }
 
   String score = "000000";
   int _numericScore = 0;
@@ -58,7 +66,7 @@ class GameViewModel extends ChangeNotifier {
   List<List<Offset>> barriers = [];
   List<GameLevel> gameLevels = [];
   int currentLevelIndex = 0;
-  late int maxLevels;
+  int maxLevels = 0;
   double currentLevelProgressInPercentage = 0.0;
   int currentLevelProgress = 0;
   int currentLevelMaxScore = 0;
@@ -97,75 +105,31 @@ class GameViewModel extends ChangeNotifier {
     double cellHeight = availableSize.height / _rows;
     _cellSize = min(cellWidth, cellHeight).floorToDouble();
   }
-
-  void initializeGame(
+  void _initializeLevelsData() {
+    List<GameLevel> generatedLevels = generateLevels(100);
+    gameLevels = generatedLevels;
+    maxLevels = gameLevels.length;
+  }
+void initializeGame(
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
   }) {
+    isGameInitialized = false;
+    notifyListeners();
+
     _gamePadding = gamePaddings;
     _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
 
-    // The currentGameMode is already set by the time we get here.
-    // We just need to set the starting level index.
     currentLevelIndex = startLevelIndex ?? 0;
-
-    // Define the base levels that are used for both modes
-    List<GameLevel> baseLevels = [
-      GameLevel(
-        levelNumber: 1,
-        levelBarriers: [getBarriersLevelOne()],
-        maxScore: 250,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 2,
-        levelBarriers: [getBarriersLevelTwo()],
-        maxScore: 250,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 3,
-        levelBarriers: [getBarriersLevelThree()],
-        maxScore: 250,
-        snake: List.generate(4, (index) => Offset(2, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 4,
-        levelBarriers: [getBarriersLevelFour()],
-        maxScore: 250,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-      GameLevel(
-        levelNumber: 5,
-        levelBarriers: [getBarriersLevelFive()],
-        maxScore: 250,
-        snake: List.generate(4, (index) => Offset(5, (13 - index).toDouble())),
-      ),
-    ];
-
-    // If in free mode, override the max score to be effectively infinite.
-    // Otherwise, use the standard levels for level mode.
-    if (currentGameMode == GameMode.freeMode) {
-      gameLevels = baseLevels
-          .map(
-            (level) => GameLevel(
-              levelNumber: level.levelNumber,
-              levelBarriers: level.levelBarriers,
-              maxScore: 999999999999999999, // Effectively infinite score
-              snake: level.snake,
-            ),
-          )
-          .toList();
-    } else {
-      gameLevels = baseLevels;
-    }
-
     maxLevels = gameLevels.length;
-    loadGameProgress().then((_) {
-      _initializeLevel();
-      startGame();
-    });
+    
+    _initializeLevel();
+    
+    startGame();
+
+    isGameInitialized = true;
+    notifyListeners();
   }
 
   void _initializeLevel() {
@@ -376,6 +340,159 @@ class GameViewModel extends ChangeNotifier {
     } while (_snake.contains(_bigScoreCell) ||
         _isBarrierCollision(_bigScoreCell) ||
         _food == _bigScoreCell);
+  }
+  
+  List<Offset> _generateVerticalLineBarriers(int level) {
+    List<Offset> barriers = [];
+    int lineCount = 1 + (level ~/ 5); 
+    List<int> availableColumns = [];
+    for (int i = 2; i < _columns - 2; i++) {
+      availableColumns.add(i);
+    }
+    availableColumns.shuffle(Random(level));
+    List<int> chosenColumns = availableColumns.take(lineCount).toList();
+    for (int col in chosenColumns) {
+      for (int j = 0; j < _rows - 8; j++) {
+        barriers.add(Offset(col.toDouble(), (j + 4).toDouble()));
+      }
+    }
+    return barriers;
+  }
+
+  Offset _findSafeStartingPosition(List<Offset> barriers) {
+    Random random = Random();
+    Offset safePosition;
+    bool isPositionSafe;
+
+    int attempts = 0;
+    do {
+      attempts++;
+    
+      int startX = random.nextInt(_columns - 4) + 2;
+      int startY = random.nextInt(_rows - 4) + 2;
+      safePosition = Offset(startX.toDouble(), startY.toDouble());
+
+    
+      isPositionSafe = true;
+      for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+          Offset checkPos = Offset(safePosition.dx + x, safePosition.dy + y);
+          if (barriers.contains(checkPos)) {
+            isPositionSafe = false;
+            break;
+          }
+        }
+        if (!isPositionSafe) break;
+      }
+    
+      if (attempts > 100) {
+        return const Offset(5, 13);
+      }
+
+    } while (!isPositionSafe);
+
+    return safePosition;
+  }
+
+  List<Offset> _generateHorizontalLineBarriers(int level) {
+    List<Offset> barriers = [];
+    int lineCount = 1 + (level ~/ 5);
+   List<int> availableRows = [];
+    for (int i = 2; i < _rows - 2; i++) {
+      availableRows.add(i);
+    }
+    availableRows.shuffle(Random(level));
+    List<int> chosenRows = availableRows.take(lineCount).toList();
+    for (int row in chosenRows) {
+      for (int j = 0; j < _columns - 8; j++) {
+        barriers.add(Offset((j + 4).toDouble(), row.toDouble()));
+      }
+    }
+    return barriers;
+  }
+
+ List<Offset> _generateBoxBarriers(int level) {
+    List<Offset> barriers = [];
+    int padding = 7 - (level ~/ 5);
+    padding = padding.clamp(1, 7);
+
+    for (int i = padding; i < _columns - padding; i++) {
+      barriers.add(Offset(i.toDouble(), padding.toDouble()));
+    }
+    for (int i = padding; i < _columns - padding; i++) {
+      barriers.add(Offset(i.toDouble(), (_rows - 1 - padding).toDouble()));
+    }
+    for (int i = padding; i < _rows - padding; i++) {
+      barriers.add(Offset(padding.toDouble(), i.toDouble()));
+    }
+    for (int i = padding; i < _rows - padding; i++) {
+      barriers.add(Offset((_columns - 1 - padding).toDouble(), i.toDouble()));
+    }
+
+
+    Random random = Random();
+    int wallToOpen = random.nextInt(4);
+    int middle;
+
+    switch (wallToOpen) {
+      case 0:
+        middle = (_columns / 2).floor();
+        barriers.removeWhere((offset) => offset.dy == padding.toDouble() && (offset.dx >= middle - 1 && offset.dx <= middle + 1));
+        break;
+      case 1:
+        middle = (_columns / 2).floor();
+        barriers.removeWhere((offset) => offset.dy == (_rows - 1 - padding).toDouble() && (offset.dx >= middle - 1 && offset.dx <= middle + 1));
+        break;
+      case 2:
+        middle = (_rows / 2).floor();
+        barriers.removeWhere((offset) => offset.dx == padding.toDouble() && (offset.dy >= middle - 1 && offset.dy <= middle + 1));
+        break;
+      case 3: 
+        middle = (_rows / 2).floor();
+        barriers.removeWhere((offset) => offset.dx == (_columns - 1 - padding).toDouble() && (offset.dy >= middle - 1 && offset.dy <= middle + 1));
+        break;
+    }
+
+    return barriers;
+  }
+  
+  List<GameLevel> generateLevels(int count) {
+    List<GameLevel> generatedLevels = [];
+    for (int i = 0; i < count; i++) {
+      int levelNumber = i + 1;
+      List<Offset> barriers;
+        if (i == 0) {
+        barriers = []; 
+      } else {
+        int patternType = i % 3;
+        switch (patternType) {
+          case 0:
+            barriers = _generateBoxBarriers(i);
+            break;
+          case 1:
+            barriers = _generateVerticalLineBarriers(i);
+            break;
+          case 2:
+            barriers = _generateHorizontalLineBarriers(i);
+            break;
+          default:
+            barriers = [];
+        }
+      }
+
+ int initialSnakeLength = 4 + (i ~/ 15);
+  Offset startPosition = _findSafeStartingPosition(barriers);
+
+      generatedLevels.add(
+        GameLevel(
+          levelNumber: levelNumber,
+          levelBarriers: [barriers],
+          maxScore: 250 + (i * 10),
+          snake: List.generate(initialSnakeLength, (index) => Offset(startPosition.dx, startPosition.dy - index)),
+        ),
+      );
+    }
+    return generatedLevels;
   }
 
   List<Offset> getBarriersLevelOne() => [];
