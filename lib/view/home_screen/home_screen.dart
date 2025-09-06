@@ -351,11 +351,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 onTap: () {
                   // Navigate to level selection for Free Mode
-                  navigateTo(
-                    context,
-                    RoutePath.openGameLevels,
-                    arguments: {'gameMode': 'free'},
-                  );
+                  navigateTo(context, RoutePath.freeModeGameScreen);
                 },
               ),
 

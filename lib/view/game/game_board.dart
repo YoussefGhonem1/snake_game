@@ -20,7 +20,6 @@ class GameBoard extends StatefulWidget {
   final double height;
   final double width;
   final int? startIndex;
-
   @override
   State<GameBoard> createState() => _GameBoardState();
 }
@@ -113,7 +112,22 @@ class _GameBoardState extends State<GameBoard>
       startLevelIndex: widget.startIndex,
     );
   }
+  Widget _buildBoardBackground(GameViewModel provider) {
+  final boardColor = provider.gameLevels[provider.currentLevelIndex].boardColor;
 
+  if (boardColor == null) {
+    return const SizedBox.shrink();
+  }
+
+  return Positioned.fill(
+    child: Container(
+      decoration: BoxDecoration(
+        color: boardColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  );
+}
   @override
   void dispose() {
     _pulseController.dispose();
@@ -302,34 +316,37 @@ class _GameBoardState extends State<GameBoard>
               Clip.none, // Allow content to extend beyond bounds if needed
           child: Stack(
             clipBehavior: Clip.none, // Prevent clipping of snake segments
-            children: [
-              _buildGrid(provider),
-              _buildBarriers(provider),
-              _buildFood(provider),
-              _buildSnake(provider),
-              if (provider.isBigScoreCellShouldAppear)
-                _buildBigScoreCell(provider),
-            ],
+          children: [
+  _buildBoardBackground(provider),
+  _buildGrid(provider),
+  _buildBarriers(provider),
+  _buildFood(provider),
+  _buildSnake(provider),
+  if (provider.isBigScoreCellShouldAppear)
+    _buildBigScoreCell(provider),
+],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildGrid(GameViewModel provider) {
-    return CustomPaint(
-      painter: GridPainter(
-        cellSize: provider.cellSize,
-        rows: provider.rows,
-        columns: provider.columns,
-      ),
-      size: Size(
-        math.max(0, provider.columns * provider.cellSize),
-        math.max(0, provider.rows * provider.cellSize),
-      ),
-    );
-  }
+ Widget _buildGrid(GameViewModel provider) {
+  final customGridColor = provider.gameLevels[provider.currentLevelIndex].gridColor;
 
+  return CustomPaint(
+    painter: GridPainter(
+      cellSize: provider.cellSize,
+      rows: provider.rows,
+      columns: provider.columns,
+      gridColor: customGridColor ?? ColorHelper.instance.primary.withOpacity(0.1),
+    ),
+    size: Size(
+      math.max(0, provider.columns * provider.cellSize),
+      math.max(0, provider.rows * provider.cellSize),
+    ),
+  );
+}
   Widget _buildBarriers(GameViewModel provider) {
     return Stack(
       children: provider.barriers.expand((barrierList) {
@@ -1076,11 +1093,13 @@ class GridPainter extends CustomPainter {
   final double cellSize;
   final int rows;
   final int columns;
+    final Color gridColor;
 
   GridPainter({
     required this.cellSize,
     required this.rows,
     required this.columns,
+      required this.gridColor,
   });
 
   @override
@@ -1090,8 +1109,8 @@ class GridPainter extends CustomPainter {
       return; // Skip painting if dimensions are invalid
     }
 
-    final paint = Paint()
-      ..color = ColorHelper.instance.primary.withOpacity(0.1)
+      final paint = Paint()
+      ..color = gridColor
       ..strokeWidth = 0.5;
 
     // Draw vertical lines with bounds checking
