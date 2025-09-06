@@ -391,20 +391,10 @@ class FreeModeGameViewModel extends ChangeNotifier {
     return prefs.getInt('levelHighScore_$levelIndex') ?? 0;
   }
 
-  // Static method to get the maximum score across all Free Mode levels
-  static Future<int> getMaxFreeModeScore() async {
-    final prefs = await SharedPreferences.getInstance();
-    int maxScore = 0;
-
-    // Check scores for all 20 levels (0-19)
-    for (int i = 0; i <200 ; i++) {
-      int levelScore = prefs.getInt('levelHighScore_$i') ?? 0;
-        maxScore = maxScore + levelScore;
-      
-    }
-
-    return maxScore;
-  }
+ static Future<int> getMaxFreeModeScore() async {
+  // This will now only return the high score for the first level (index 0)
+  return await getStaticLevelHighScore(0);
+}
 
   // Sound Methods
   void _playEatSound() {
