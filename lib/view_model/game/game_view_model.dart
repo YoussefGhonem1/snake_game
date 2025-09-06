@@ -13,8 +13,7 @@ enum GameMode {
 }
 
 class GameViewModel extends ChangeNotifier {
-
-   GameViewModel() {
+  GameViewModel() {
     loadGameProgress();
     _initializeLevelsData();
   }
@@ -27,26 +26,23 @@ class GameViewModel extends ChangeNotifier {
   int maxUnlockedLevel = 1;
   int highScore = 0;
   bool hasNewHighScore = false;
-   bool isGameInitialized = false; 
+  bool isGameInitialized = false;
   // Visual effects and animations
   bool isFoodSmall = true;
   bool isBigScoreCellSmall = true;
   bool isBigScoreCellShouldAppear = false;
   int eatFoodCounterToShowBigCell = 0;
   bool showParticles = false;
-
+  Color? customGridColor;
   AnimationController? bigScoreAnimationController;
   AnimationController? nextLevelAnimationController;
 
   final Duration _baseDuration = const Duration(milliseconds: 200);
-Duration get _currentDuration {
-    int dynamicReduction = (currentLevelIndex * 3); 
+  Duration get _currentDuration {
+    int dynamicReduction = (currentLevelIndex * 3);
 
     return Duration(
-      milliseconds: max(
-        75, 
-        _baseDuration.inMilliseconds - dynamicReduction,
-      ),
+      milliseconds: max(75, _baseDuration.inMilliseconds - dynamicReduction),
     );
   }
 
@@ -105,12 +101,14 @@ Duration get _currentDuration {
     double cellHeight = availableSize.height / _rows;
     _cellSize = min(cellWidth, cellHeight).floorToDouble();
   }
+
   void _initializeLevelsData() {
-    List<GameLevel> generatedLevels = generateLevels(100);
+    List<GameLevel> generatedLevels = generateLevels(150);
     gameLevels = generatedLevels;
     maxLevels = gameLevels.length;
   }
-void initializeGame(
+
+  void initializeGame(
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
@@ -123,9 +121,9 @@ void initializeGame(
 
     currentLevelIndex = startLevelIndex ?? 0;
     maxLevels = gameLevels.length;
-    
+
     _initializeLevel();
-    
+
     startGame();
 
     isGameInitialized = true;
@@ -275,8 +273,6 @@ void initializeGame(
   void _addScore(int points) {
     _numericScore += points;
     score = _numericScore.toString().padLeft(6, '0');
-      print("--------------------------------"); // youssef -just for check 
-      print("Score updated to: $score"); // youssef -just for check 
   }
 
   void _updateProgress() {
@@ -341,168 +337,202 @@ void initializeGame(
         _isBarrierCollision(_bigScoreCell) ||
         _food == _bigScoreCell);
   }
-  
-  List<Offset> _generateVerticalLineBarriers(int level) {
-    List<Offset> barriers = [];
-    int lineCount = 1 + (level ~/ 5); 
-    List<int> availableColumns = [];
-    for (int i = 2; i < _columns - 2; i++) {
-      availableColumns.add(i);
+
+
+Offset _findSafeStartingPosition(List<Offset> barriers, int initialSnakeLength) {
+  List<Offset> allPossiblePositions = [];
+  for (int y = initialSnakeLength; y < _rows - 2; y++) {
+    for (int x = 2; x < _columns - 2; x++) {
+      allPossiblePositions.add(Offset(x.toDouble(), y.toDouble()));
     }
-    availableColumns.shuffle(Random(level));
-    List<int> chosenColumns = availableColumns.take(lineCount).toList();
-    for (int col in chosenColumns) {
-      for (int j = 0; j < _rows - 8; j++) {
-        barriers.add(Offset(col.toDouble(), (j + 4).toDouble()));
+  }
+
+  allPossiblePositions.shuffle(Random());
+
+  for (Offset potentialHeadPos in allPossiblePositions) {
+    bool isCompletelySafe = true;
+
+    List<Offset> potentialSnake = List.generate(
+        initialSnakeLength, (index) => Offset(potentialHeadPos.dx, potentialHeadPos.dy - index));
+
+    for (Offset segment in potentialSnake) {
+      if (barriers.contains(segment)) {
+        isCompletelySafe = false;
+        break;
+      }
+    }
+
+    if (!isCompletelySafe) {
+      continue; 
+    }
+
+    Offset rightOfHead = Offset(potentialHeadPos.dx + 1, potentialHeadPos.dy);
+    Offset leftOfHead = Offset(potentialHeadPos.dx - 1, potentialHeadPos.dy);
+    Offset aboveHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy - 1);
+    Offset belowHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy + 1);
+
+    if (barriers.contains(rightOfHead) &&
+        barriers.contains(leftOfHead) &&
+        barriers.contains(aboveHead) &&
+        barriers.contains(belowHead)) {
+      isCompletelySafe = false;
+    }
+
+    if (isCompletelySafe) {
+      if (!barriers.contains(rightOfHead)) {
+        _direction = 'right';
+        _nextDirection = 'right';
+      } else if (!barriers.contains(leftOfHead)) {
+        _direction = 'left';
+        _nextDirection = 'left';
+      } else if (!barriers.contains(belowHead)) {
+        _direction = 'down';
+        _nextDirection = 'down';
+      } else {
+        _direction = 'up';
+        _nextDirection = 'up';
+      }
+      return potentialHeadPos;
+    }
+  }
+
+  // في أسوأ الحالات، نعود لمكان آمن معروف ومضمون
+  return const Offset(10, 10);
+}
+
+  List<Offset> _getCornerClustersPattern() {
+    List<Offset> barriers = [];
+    for (int i = 2; i < 6; i++) {
+      for (int j = 2; j < 6; j++) {
+        barriers.add(Offset(i.toDouble(), j.toDouble())); // Top-Left
+        barriers.add(
+          Offset((_columns - 1 - i).toDouble(), j.toDouble()),
+        ); // Top-Right
+        barriers.add(
+          Offset(i.toDouble(), (_rows - 1 - j).toDouble()),
+        ); // Bottom-Left
+        barriers.add(
+          Offset((_columns - 1 - i).toDouble(), (_rows - 1 - j).toDouble()),
+        ); // Bottom-Right
       }
     }
     return barriers;
   }
 
-  Offset _findSafeStartingPosition(List<Offset> barriers) {
-    Random random = Random();
-    Offset safePosition;
-    bool isPositionSafe;
-
-    int attempts = 0;
-    do {
-      attempts++;
-    
-      int startX = random.nextInt(_columns - 4) + 2;
-      int startY = random.nextInt(_rows - 4) + 2;
-      safePosition = Offset(startX.toDouble(), startY.toDouble());
-
-    
-      isPositionSafe = true;
-      for (int x = -1; x <= 1; x++) {
-        for (int y = -1; y <= 1; y++) {
-          Offset checkPos = Offset(safePosition.dx + x, safePosition.dy + y);
-          if (barriers.contains(checkPos)) {
-            isPositionSafe = false;
-            break;
-          }
-        }
-        if (!isPositionSafe) break;
-      }
-    
-      if (attempts > 100) {
-        return const Offset(5, 13);
-      }
-
-    } while (!isPositionSafe);
-
-    return safePosition;
+  List<Offset> _getMazePattern() {
+    List<Offset> barriers = [];
+    for (int i = 0; i < 14; i++) {
+      barriers.add(Offset(4, i.toDouble()));
+      barriers.add(Offset(15, (_rows - 1 - i).toDouble()));
+    }
+    for (int i = 9; i < _columns; i++) {
+      barriers.add(Offset(i.toDouble(), 7));
+    }
+    return barriers;
   }
 
-  List<Offset> _generateHorizontalLineBarriers(int level) {
+  List<Offset> _getParallelLinesPattern() {
     List<Offset> barriers = [];
-    int lineCount = 1 + (level ~/ 5);
-   List<int> availableRows = [];
-    for (int i = 2; i < _rows - 2; i++) {
-      availableRows.add(i);
+    for (int i = 4; i < _rows - 4; i++) {
+      barriers.add(Offset(6, i.toDouble()));
+      barriers.add(Offset(13, i.toDouble()));
     }
-    availableRows.shuffle(Random(level));
-    List<int> chosenRows = availableRows.take(lineCount).toList();
-    for (int row in chosenRows) {
-      for (int j = 0; j < _columns - 8; j++) {
-        barriers.add(Offset((j + 4).toDouble(), row.toDouble()));
+    return barriers;
+  }
+
+  List<Offset> _getCrossPattern() {
+    List<Offset> barriers = [];
+    for (int i = 5; i < _columns - 5; i++) {
+      barriers.add(Offset(i.toDouble(), 9));
+    }
+    for (int i = 5; i < _rows - 5; i++) {
+      barriers.add(Offset(9, i.toDouble()));
+    }
+    return barriers;
+  }
+
+  List<Offset> _getCentralBoxPattern() {
+    List<Offset> barriers = [];
+    for (int i = 6; i < _columns - 6; i++) {
+      barriers.add(Offset(i.toDouble(), 6));
+    }
+    for (int i = 7; i < _rows - 7; i++) {
+      if (i < (_rows / 2) - 2 || i > (_rows / 2) + 1) {
+        barriers.add(Offset(6, i.toDouble()));
+        barriers.add(Offset(_columns - 7, i.toDouble()));
       }
     }
     return barriers;
   }
 
- List<Offset> _generateBoxBarriers(int level) {
+  List<Offset> _getDiagonalLinesPattern() {
     List<Offset> barriers = [];
-    int padding = 7 - (level ~/ 5);
-    padding = padding.clamp(1, 7);
-
-    for (int i = padding; i < _columns - padding; i++) {
-      barriers.add(Offset(i.toDouble(), padding.toDouble()));
+    for (int i = 4; i < 16; i++) {
+      barriers.add(Offset(i.toDouble(), i.toDouble()));
+      barriers.add(Offset((_columns - 1 - i).toDouble(), i.toDouble()));
     }
-    for (int i = padding; i < _columns - padding; i++) {
-      barriers.add(Offset(i.toDouble(), (_rows - 1 - padding).toDouble()));
-    }
-    for (int i = padding; i < _rows - padding; i++) {
-      barriers.add(Offset(padding.toDouble(), i.toDouble()));
-    }
-    for (int i = padding; i < _rows - padding; i++) {
-      barriers.add(Offset((_columns - 1 - padding).toDouble(), i.toDouble()));
-    }
-
-
-    Random random = Random();
-    int wallToOpen = random.nextInt(4);
-    int middle;
-
-    switch (wallToOpen) {
-      case 0:
-        middle = (_columns / 2).floor();
-        barriers.removeWhere((offset) => offset.dy == padding.toDouble() && (offset.dx >= middle - 1 && offset.dx <= middle + 1));
-        break;
-      case 1:
-        middle = (_columns / 2).floor();
-        barriers.removeWhere((offset) => offset.dy == (_rows - 1 - padding).toDouble() && (offset.dx >= middle - 1 && offset.dx <= middle + 1));
-        break;
-      case 2:
-        middle = (_rows / 2).floor();
-        barriers.removeWhere((offset) => offset.dx == padding.toDouble() && (offset.dy >= middle - 1 && offset.dy <= middle + 1));
-        break;
-      case 3: 
-        middle = (_rows / 2).floor();
-        barriers.removeWhere((offset) => offset.dx == (_columns - 1 - padding).toDouble() && (offset.dy >= middle - 1 && offset.dy <= middle + 1));
-        break;
-    }
-
     return barriers;
   }
-  
+
   List<GameLevel> generateLevels(int count) {
     List<GameLevel> generatedLevels = [];
+    final basePatterns = [
+      _getParallelLinesPattern,
+      _getCornerClustersPattern,
+      _getMazePattern,
+      _getCentralBoxPattern,
+    ];
+
     for (int i = 0; i < count; i++) {
       int levelNumber = i + 1;
       List<Offset> barriers;
-        if (i == 0) {
-        barriers = []; 
+      Color? customBoardColor;
+      Color? customGridColor;
+
+      if (levelNumber <= 10) {
+        barriers = [];
+      } else if (levelNumber <= 30) {
+        barriers = basePatterns[(levelNumber - 11) % basePatterns.length]();
+      } else if (levelNumber <= 60) {
+        barriers = basePatterns[(levelNumber - 31) % basePatterns.length]();
+        barriers.addAll(_getCrossPattern());
+      } else if (levelNumber <= 90) {
+        barriers = basePatterns[(levelNumber - 61) % basePatterns.length]();
+        barriers.addAll(_getCrossPattern());
+      } else if (levelNumber <= 120) {
+        barriers = basePatterns[(levelNumber - 91) % basePatterns.length]();
+        barriers.addAll(_getCrossPattern());
       } else {
-        int patternType = i % 3;
-        switch (patternType) {
-          case 0:
-            barriers = _generateBoxBarriers(i);
-            break;
-          case 1:
-            barriers = _generateVerticalLineBarriers(i);
-            break;
-          case 2:
-            barriers = _generateHorizontalLineBarriers(i);
-            break;
-          default:
-            barriers = [];
-        }
+        barriers = basePatterns[(levelNumber - 121) % basePatterns.length]();
+        barriers.addAll(_getDiagonalLinesPattern());
       }
 
- int initialSnakeLength = 4 + (i ~/ 15);
-  Offset startPosition = _findSafeStartingPosition(barriers);
+      if (levelNumber > 100) {
+        customBoardColor = const Color(0xFF1A1A2E).withOpacity(0.5);
+        customGridColor = customBoardColor;
+      }
+
+      int initialSnakeLength = 4 + (i ~/ 20);
+      Offset startPosition = _findSafeStartingPosition(
+        barriers,
+        initialSnakeLength,
+      );
 
       generatedLevels.add(
         GameLevel(
           levelNumber: levelNumber,
           levelBarriers: [barriers],
           maxScore: 250 + (i * 10),
-          snake: List.generate(initialSnakeLength, (index) => Offset(startPosition.dx, startPosition.dy - index)),
+          snake: List.generate(
+            initialSnakeLength,
+            (index) => Offset(startPosition.dx, startPosition.dy - index),
+          ),
+          boardColor: customBoardColor,
+          gridColor: customGridColor,
         ),
       );
     }
     return generatedLevels;
-  }
-
-  List<Offset> getBarriersLevelOne() => [];
-  List<Offset> getBarriersLevelTwo() {
-    List<Offset> barriers = [];
-    for (int i = 0; i < 10; i++) {
-      barriers.add(Offset(5, i.toDouble()));
-      barriers.add(Offset(14, (_rows - 1 - i).toDouble()));
-    }
-    return barriers;
   }
 
   List<Offset> getBarriersLevelThree() {
@@ -574,6 +604,42 @@ void initializeGame(
 
   void _playLevelCompleteSound() {
     SoundHelper.instance.playLevelCompleteSound();
+  }
+
+  List<Offset> getRandomizedBarriers(int level) {
+    List<Offset> barriers = [];
+    Random random = Random(level);
+    int barrierCount = 5 + (level ~/ 5);
+    for (int i = 0; i < barrierCount; i++) {
+      int x = 4 + random.nextInt(_columns - 8);
+      int y = 4 + random.nextInt(_rows - 8);
+      barriers.add(Offset(x.toDouble(), y.toDouble()));
+    }
+    return barriers;
+  }
+
+  List<Offset> getVerticalPassagesBarriers(int level) {
+    List<Offset> barriers = [];
+    int passageGap = max(3, 6 - (level ~/ 20));
+    for (int i = 0; i < _rows; i++) {
+      if (i % passageGap != 0 && i % passageGap != 1) {
+        barriers.add(Offset(6, i.toDouble()));
+        barriers.add(Offset(13, i.toDouble()));
+      }
+    }
+    return barriers;
+  }
+
+  List<Offset> getSimpleMazeBarriers() {
+    List<Offset> barriers = [];
+    for (int i = 0; i < 15; i++) {
+      barriers.add(Offset(4, i.toDouble()));
+      barriers.add(Offset(15, (_rows - 1 - i).toDouble()));
+    }
+    for (int i = 4; i < 10; i++) {
+      barriers.add(Offset(i.toDouble(), 14));
+    }
+    return barriers;
   }
 
   @override

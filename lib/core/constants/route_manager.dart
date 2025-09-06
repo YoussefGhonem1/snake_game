@@ -7,4 +7,6 @@ class RoutePath {
   static const privacyPolicyScreen = "/privacyPolicyScreen";
   static const splashScreen = "/splashScreen";
   static const snakeGameScreen = "/snakeGameScreen";
+  static const  freeModeGameScreen = '/freeModeGameScreen'; 
+
 }

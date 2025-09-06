@@ -104,7 +104,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                     horizontal: 30,
                     vertical: 20,
                   ),
-                  itemCount: gameScreenViewModel.maxLevels,
+                 itemCount: _isFreeMode ? 1 : gameScreenViewModel.maxLevels,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     childAspectRatio: 1.0,
