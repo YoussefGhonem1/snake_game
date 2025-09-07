@@ -12,11 +12,13 @@ class FreeModeGameBoard extends StatefulWidget {
     super.key,
     required this.height,
     required this.width,
+    required this.selectedSnakeIndex,
     this.startIndex,
   });
   final double height;
   final double width;
   final int? startIndex;
+  final int selectedSnakeIndex;
 
   @override
   State<FreeModeGameBoard> createState() => _FreeModeGameBoardState();
