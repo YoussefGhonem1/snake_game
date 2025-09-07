@@ -112,22 +112,25 @@ class _GameBoardState extends State<GameBoard>
       startLevelIndex: widget.startIndex,
     );
   }
-  Widget _buildBoardBackground(GameViewModel provider) {
-  final boardColor = provider.gameLevels[provider.currentLevelIndex].boardColor;
 
-  if (boardColor == null) {
-    return const SizedBox.shrink();
+  Widget _buildBoardBackground(GameViewModel provider) {
+    final boardColor =
+        provider.gameLevels[provider.currentLevelIndex].boardColor;
+
+    if (boardColor == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          color: boardColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
   }
 
-  return Positioned.fill(
-    child: Container(
-      decoration: BoxDecoration(
-        color: boardColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-  );
-}
   @override
   void dispose() {
     _pulseController.dispose();
@@ -246,17 +249,47 @@ class _GameBoardState extends State<GameBoard>
     IconData icon,
     VoidCallback onPressed,
   ) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: ColorHelper.instance.onPrimary),
-      label: Text(
-        text,
-        style: TextStyle(color: ColorHelper.instance.onPrimary),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.32,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: ColorHelper.instance.onPrimary),
+        label: Text(
+          text,
+          style: TextStyle(color: ColorHelper.instance.onPrimary),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorHelper.instance.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: ColorHelper.instance.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    );
+  }
+
+  Widget _buildwinDialogButton(
+    String text,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.32,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: ColorHelper.instance.onPrimary),
+        label: Text(
+          text,
+          style: TextStyle(color: ColorHelper.instance.onPrimary),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
       ),
     );
   }
@@ -316,37 +349,40 @@ class _GameBoardState extends State<GameBoard>
               Clip.none, // Allow content to extend beyond bounds if needed
           child: Stack(
             clipBehavior: Clip.none, // Prevent clipping of snake segments
-          children: [
-  _buildBoardBackground(provider),
-  _buildGrid(provider),
-  _buildBarriers(provider),
-  _buildFood(provider),
-  _buildSnake(provider),
-  if (provider.isBigScoreCellShouldAppear)
-    _buildBigScoreCell(provider),
-],
+            children: [
+              _buildBoardBackground(provider),
+              _buildGrid(provider),
+              _buildBarriers(provider),
+              _buildFood(provider),
+              _buildSnake(provider),
+              if (provider.isBigScoreCellShouldAppear)
+                _buildBigScoreCell(provider),
+            ],
           ),
         ),
       ),
     );
   }
 
- Widget _buildGrid(GameViewModel provider) {
-  final customGridColor = provider.gameLevels[provider.currentLevelIndex].gridColor;
+  Widget _buildGrid(GameViewModel provider) {
+    final customGridColor =
+        provider.gameLevels[provider.currentLevelIndex].gridColor;
 
-  return CustomPaint(
-    painter: GridPainter(
-      cellSize: provider.cellSize,
-      rows: provider.rows,
-      columns: provider.columns,
-      gridColor: customGridColor ?? ColorHelper.instance.primary.withOpacity(0.1),
-    ),
-    size: Size(
-      math.max(0, provider.columns * provider.cellSize),
-      math.max(0, provider.rows * provider.cellSize),
-    ),
-  );
-}
+    return CustomPaint(
+      painter: GridPainter(
+        cellSize: provider.cellSize,
+        rows: provider.rows,
+        columns: provider.columns,
+        gridColor:
+            customGridColor ?? ColorHelper.instance.primary.withOpacity(0.1),
+      ),
+      size: Size(
+        math.max(0, provider.columns * provider.cellSize),
+        math.max(0, provider.rows * provider.cellSize),
+      ),
+    );
+  }
+
   Widget _buildBarriers(GameViewModel provider) {
     return Stack(
       children: provider.barriers.expand((barrierList) {
@@ -861,61 +897,84 @@ class _GameBoardState extends State<GameBoard>
   }
 
   Widget _buildGameOverDialog() {
+    final colorHelper = ColorHelper.instance;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              ColorHelper.instance.gameOverColor.withOpacity(0.9),
-              ColorHelper.instance.secondary,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
+          gradient: colorHelper.gameBackgroundGradient,
+          borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: ColorHelper.instance.gameOverColor,
+            color: colorHelper.primary.withOpacity(0.5),
             width: 2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: colorHelper.primary.withOpacity(0.3),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.sentiment_dissatisfied,
-              size: 60,
-              color: ColorHelper.instance.gameOverColor,
+              Icons.sentiment_very_dissatisfied,
+              size: 70,
+              color: colorHelper.gameOverColor,
             ),
             const SizedBox(height: 20),
             Text(
               context.tr('you_lose'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+              style: TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
+                color: colorHelper.primary,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             Text(
               '${context.tr('score')}: ${gameViewModel.score}',
               style: TextStyle(
-                color: ColorHelper.instance.scoreColor,
-                fontSize: 18,
+                fontSize: 20,
+                color: colorHelper.scoreColor,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'monospace',
               ),
             ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildDialogButton(context.tr('restart'), Icons.refresh, () {
-                  Navigator.of(context).pop();
-                  gameViewModel.restartGame();
-                }),
-                _buildDialogButton(context.tr('main_menu'), Icons.home, () {
-                  Navigator.of(context).pop();
-                  navigateAndRemoveUntil(context, RoutePath.homeScreen);
-                }),
-              ],
+            const SizedBox(height: 35),
+
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildDialogButton(
+                      context.tr('restart'),
+                      Icons.refresh,
+                      () {
+                        Navigator.of(context).pop();
+                        gameViewModel.restartGame();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDialogButton(context.tr('main_menu'), Icons.home, () {
+                      Navigator.of(context).pop();
+                      navigateAndRemoveUntil(context, RoutePath.homeScreen);
+                    }),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -1025,62 +1084,80 @@ class _GameBoardState extends State<GameBoard>
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              ColorHelper.instance.victoryColor.withOpacity(0.9),
-              ColorHelper.instance.secondary,
-            ],
+            colors: [const Color(0xFF4CAF50), const Color(0xFF2E7D32)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: ColorHelper.instance.victoryColor,
-            width: 2,
-          ),
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 5,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.emoji_events,
-              size: 60,
-              color: ColorHelper.instance.victoryColor,
-            ),
+            Icon(Icons.emoji_events, size: 70, color: Colors.yellow.shade600),
             const SizedBox(height: 20),
             Text(
               context.tr('you_won'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+              style: TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.6),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
               context.tr('level_complete'),
               style: TextStyle(
-                color: ColorHelper.instance.victoryColor,
+                color: Colors.white.withOpacity(0.9),
                 fontSize: 18,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildDialogButton(
-                  context.tr('next_level'),
-                  Icons.arrow_forward,
-                  () {
-                    Navigator.of(context).pop();
-                    gameViewModel.nextLevel();
-                  },
+            const SizedBox(height: 35),
+
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildwinDialogButton(
+                      context.tr('next_level'),
+                      Icons.arrow_forward,
+                      () {
+                        Navigator.of(context).pop();
+                        gameViewModel.nextLevel();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _buildwinDialogButton(
+                      context.tr('main_menu'),
+                      Icons.home,
+                      () {
+                        Navigator.of(context).pop();
+                        navigateAndRemoveUntil(context, RoutePath.homeScreen);
+                      },
+                    ),
+                  ],
                 ),
-                _buildDialogButton(context.tr('main_menu'), Icons.home, () {
-                  Navigator.of(context).pop();
-                  navigateAndRemoveUntil(context, RoutePath.homeScreen);
-                }),
-              ],
+              ),
             ),
           ],
         ),
@@ -1093,13 +1170,13 @@ class GridPainter extends CustomPainter {
   final double cellSize;
   final int rows;
   final int columns;
-    final Color gridColor;
+  final Color gridColor;
 
   GridPainter({
     required this.cellSize,
     required this.rows,
     required this.columns,
-      required this.gridColor,
+    required this.gridColor,
   });
 
   @override
@@ -1109,7 +1186,7 @@ class GridPainter extends CustomPainter {
       return; // Skip painting if dimensions are invalid
     }
 
-      final paint = Paint()
+    final paint = Paint()
       ..color = gridColor
       ..strokeWidth = 0.5;
 
