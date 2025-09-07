@@ -28,7 +28,10 @@ class FreeModeGameViewModel extends ChangeNotifier {
   final Duration _baseDuration = const Duration(milliseconds: 150);
 
   String score = "000000";
+
   int _numericScore = 0;
+  int _Coins = 0;
+
   late List<Offset> _snake;
   late Offset _food;
   late Offset _bigScoreCell;
@@ -239,8 +242,19 @@ class FreeModeGameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _saveCoinsToSP(int coins) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('userCoins', coins);
+  }
+
+  void _addCoins(int points) {
+    _Coins += points;
+    //await _saveCoinsToSP(_numericScore);
+  }
+
   void _eatBigScoreCell() {
-    _addScore(30);
+    _addScore(10);
+    _addCoins(30);
     isBigScoreCellShouldAppear = false;
     _generateBigScoreCell();
     _playEatSound();
@@ -361,7 +375,7 @@ class FreeModeGameViewModel extends ChangeNotifier {
   Future<void> saveGameProgress() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('highScore', highScore);
-
+    _saveCoinsToSP(_Coins);
     // Save level-specific high scores
     for (int levelIndex in levelHighScores.keys) {
       await prefs.setInt(

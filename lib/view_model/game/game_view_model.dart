@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snake_game/core/helpers/unity_ads_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
@@ -311,14 +310,14 @@ class GameViewModel extends ChangeNotifier {
   void _addScore(int points) {
     _numericScore += points;
     score = _numericScore.toString().padLeft(6, '0');
-      print("--------------------------------"); // youssef -just for check 
-      print("Score updated to: $score"); // youssef -just for check 
+    print("--------------------------------"); // youssef -just for check
+    print("Score updated to: $score"); // youssef -just for check
   }
 
   void _updateProgress() {
     // In free mode, there's no progress to update, the game is endless.
     if (currentGameMode == GameMode.freeMode) return;
-
+    //_levelCompleted();
     // Only update progress in level mode.
     currentLevelProgress = _numericScore;
     currentLevelProgressInPercentage =
@@ -333,12 +332,14 @@ class GameViewModel extends ChangeNotifier {
     if (!_isPlaying) return;
     _timer?.cancel();
     _isPlaying = false;
+    saveNextLevel();
     saveGameProgress().then((_) {
       _playLevelCompleteSound();
       // UnityAdsHelper.showInterstitialAd();
       onGameCompleted();
       notifyListeners();
     });
+    saveNextLevel();
   }
 
   void _gameOver() {
@@ -433,6 +434,7 @@ class GameViewModel extends ChangeNotifier {
   Future<void> saveGameProgress() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('highScore', highScore);
+
     if (currentGameMode == GameMode.levelMode) {
       if (currentLevelProgressInPercentage >= 1.0 &&
           currentLevelIndex + 2 > maxUnlockedLevel) {
@@ -440,6 +442,11 @@ class GameViewModel extends ChangeNotifier {
         await prefs.setInt('maxUnlockedLevel', maxUnlockedLevel);
       }
     }
+  }
+
+  Future<void> saveNextLevel() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('userLevel', currentLevelIndex + 2);
   }
 
   String getFormattedHighScore() {

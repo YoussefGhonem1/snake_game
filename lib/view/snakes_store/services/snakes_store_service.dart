@@ -17,11 +17,10 @@ class SnakesStoreService {
     final userLevel = prefs.getInt(AppStrings.userLevel) ?? 1;
     final selectedSnakeIndex = prefs.getInt(AppStrings.selectedSnakeIndex) ?? 0;
 
-    // Load owned snakes
     final ownedSnakes = List.generate(SnakeDesignsData.snakeDesigns.length, (
       index,
     ) {
-      if (index == 0) return true; // Default snake is always owned
+      if (index == 0) return true;
       return prefs.getBool('${AppStrings.ownedSnakes}_$index') ?? false;
     });
 
@@ -35,9 +34,20 @@ class SnakesStoreService {
 
   Future<void> saveUserData({
     required int userCoins,
+    required int userLevel,
     required int selectedSnakeIndex,
     required List<bool> ownedSnakes,
   }) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(AppStrings.userCoins, userCoins);
+    await prefs.setInt(AppStrings.userLevel, userLevel);
+    await prefs.setInt(AppStrings.selectedSnakeIndex, selectedSnakeIndex);
+
+    for (int i = 0; i < ownedSnakes.length; i++) {
+      await prefs.setBool('${AppStrings.ownedSnakes}_$i', ownedSnakes[i]);
+    }
+
     GameHelper.instance.updateUserCoins(userCoins);
     GameHelper.instance.updateSelectedSnakeIndex(selectedSnakeIndex);
     GameHelper.instance.updateOwnedSnakes(ownedSnakes);

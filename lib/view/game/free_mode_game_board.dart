@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snake_game/core/constants/game_colors.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/model/model/game_padding.dart';
+import 'package:snake_game/view/snakes_store/data/snake_designs_data.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,11 +13,13 @@ class FreeModeGameBoard extends StatefulWidget {
     super.key,
     required this.height,
     required this.width,
+    required this.selectedSnakeIndex,
     this.startIndex,
   });
   final double height;
   final double width;
   final int? startIndex;
+  final int selectedSnakeIndex;
 
   @override
   State<FreeModeGameBoard> createState() => _FreeModeGameBoardState();
@@ -496,7 +499,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
 
   Widget _buildSnakeHead(FreeModeGameViewModel provider) {
     double rotation = _getHeadRotation(provider.direction);
-
+    //widget.selectedSnakeIndex
     return Transform.rotate(
       angle: rotation,
       child: Center(
@@ -504,7 +507,8 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
           width: provider.cellSize * 1.3, // More reasonable size
           height: provider.cellSize * 1.3,
           child: Image.asset(
-            'assets/images/LorenzosNewSnakeAssets/head/Head.png',
+            //SnakeDesignsData.snakeDesigns[5].imgPaths[0],
+            'assets/images/snakeShapes/new/head.png',
             fit: BoxFit.contain,
           ),
         ),
@@ -521,31 +525,75 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
         width: provider.cellSize,
         height: provider.cellSize,
         child: Image.asset(
-          'assets/images/LorenzosNewSnakeAssets/tail/256px/tail_final00.png',
-          fit: BoxFit.contain,
+          'assets/images/snakeShapes/new/tail.png',
+          fit: BoxFit.cover,
         ),
       ),
     );
   }
+
+  // Widget _buildSnakeBody(
+  //   FreeModeGameViewModel provider,
+  //   int index,
+  //   Offset segment,
+  // ) {
+  //   String segmentType = _getSegmentType(provider, index, segment);
+  //   String? imagePath = _getBodyImagePath(
+  //     segmentType,
+  //     index,
+  //     provider,
+  //     segment,
+  //   );
+  //   double rotation = _getBodyRotation(segmentType, provider, index, segment);
+
+  //   // Slightly bigger so segments overlap
+  //   double segmentWidth = provider.cellSize * 1.2;
+  //   double segmentHeight = provider.cellSize * 1.2;
+
+  //   // Center them (negative offset pulls image into previous cell)
+  //   double offsetX = -provider.cellSize * 0.1;
+  //   double offsetY = -provider.cellSize * 0.1;
+
+  //   return Transform.translate(
+  //     offset: Offset(offsetX, offsetY),
+  //     child: Transform.rotate(
+  //       angle: rotation,
+  //       child: SizedBox(
+  //         width: segmentWidth,
+  //         height: segmentHeight,
+  //         child: imagePath != null
+  //             ? Image.asset(imagePath, fit: BoxFit.cover)
+  //             : null, // nothing if no image
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildSnakeBody(
     FreeModeGameViewModel provider,
     int index,
     Offset segment,
   ) {
-    // Check if this segment is a corner (direction change)
     String segmentType = _getSegmentType(provider, index, segment);
-    String imagePath = _getBodyImagePath(segmentType, index, provider, segment);
+    String? imagePath = _getBodyImagePath(
+      segmentType,
+      index,
+      provider,
+      segment,
+    );
+
+    // Get the corner image if it's a corner
+    String? imagePath2 = _getCorner(segmentType, index, provider, segment);
+
     double rotation = _getBodyRotation(segmentType, provider, index, segment);
 
-    // Adjust size and position based on segment type
-    double segmentWidth = provider.cellSize;
-    double segmentHeight = provider.cellSize;
-    double offsetX = 0;
-    double offsetY = 0;
+    // Slightly bigger so segments overlap
+    double segmentWidth = provider.cellSize * 1.2;
+    double segmentHeight = provider.cellSize * 1.2;
 
-    // No offsets; keep full scale for all segments
-    // segmentWidth and segmentHeight remain equal to cellSize
+    // Center them (negative offset pulls image into previous cell)
+    double offsetX = -provider.cellSize * 0.1;
+    double offsetY = -provider.cellSize * 0.1;
 
     return Transform.translate(
       offset: Offset(offsetX, offsetY),
@@ -554,7 +602,20 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
         child: SizedBox(
           width: segmentWidth,
           height: segmentHeight,
-          child: Image.asset(imagePath, fit: BoxFit.contain),
+          child: Stack(
+            children: [
+              // Body image
+              if (imagePath != null)
+                Positioned.fill(
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
+                ),
+              //Corner image (if it exists)
+              if (imagePath2 != null)
+                Positioned.fill(
+                  child: Image.asset(imagePath2, fit: BoxFit.fill),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -629,7 +690,51 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     }
   }
 
-  String _getBodyImagePath(
+  String? _getCorner(
+    String segmentType,
+    int index,
+    FreeModeGameViewModel provider,
+    Offset segment,
+  ) {
+    // Corners: use orientation-specific connector images based on turn direction
+    if (index > 0 && index < provider.snake.length - 1) {
+      Offset prevSegment = provider.snake[index - 1];
+      Offset nextSegment = provider.snake[index + 1];
+
+      double prevDx = segment.dx - prevSegment.dx;
+      double prevDy = segment.dy - prevSegment.dy;
+      double nextDx = nextSegment.dx - segment.dx;
+      double nextDy = nextSegment.dy - segment.dy;
+
+      // Updated mapping with new clearer image names
+      // right2down: bottom-right corner (coming from left/up, going to right/down)
+
+      if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[5];
+        //return null;
+        return 'assets/images/snakeShapes/new/bottom-right.png';
+
+      // left2down: bottom-left corner (coming from right/up, going to left/down)
+      if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0))
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[6];
+        return 'assets/images/snakeShapes/new/bottom-left.png';
+      //return null;
+
+      // right2up: top-right corner (coming from left/down, going to right/up)
+      if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0))
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[7];
+        //return null;
+        return 'assets/images/snakeShapes/new/top-right.png';
+
+      // left2up: top-left corner (coming from right/down, go7+ing to left/up)
+      if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0))
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[8];
+        //return null;
+        return 'assets/images/snakeShapes/new/top-left.png';
+    }
+  }
+
+  String? _getBodyImagePath(
     String segmentType,
     int index,
     FreeModeGameViewModel provider,
@@ -638,13 +743,13 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     // Straight segments keep alternating images for wavy effect
     if (segmentType == 'horizontal') {
       return (provider.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal01.png';
+          ? 'assets/images/snakeShapes/new/hor.png'
+          : 'assets/images/snakeShapes/new/hor.png';
     }
     if (segmentType == 'vertical') {
       return (provider.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical01.png';
+          ? 'assets/images/snakeShapes/new/ver.png'
+          : 'assets/images/snakeShapes/new/ver.png';
     }
 
     // Corners: use orientation-specific connector images based on turn direction
@@ -659,25 +764,71 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
 
       // Updated mapping with new clearer image names
       // right2down: bottom-right corner (coming from left/up, going to right/down)
+
       if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2down_connector.png';
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[5];
+        return null;
+      //return 'assets/images/snakeShapes/new/bottom-right.png';
 
       // left2down: bottom-left corner (coming from right/up, going to left/down)
       if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2down_connector.png';
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[6];
+        //return 'assets/images/snakeShapes/new/bottom-l eft55.png';
+        return null;
 
       // right2up: top-right corner (coming from left/down, going to right/up)
       if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2up_connector.png';
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[7];
+        return null;
+      //return 'assets/images/snakeShapes/new/top-rightt.png';
 
       // left2up: top-left corner (coming from right/down, going to left/up)
       if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2up_connector.png';
+        //return SnakeDesignsData.snakeDesigns[5].imgPaths[8];
+        return null;
+      //return 'assets/images/snakeShapes/new/top-left.png';
     }
 
     // Fallback for straight segments
-    return 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png';
+    return null;
   }
+
+  // String? _getBodyImagePath(
+  //   String segmentType,
+  //   int index,
+  //   FreeModeGameViewModel provider,
+  //   Offset segment,
+  // ) {
+  //   // Straight segments keep alternating images for wavy effect
+  //   if (segmentType == 'horizontal') {
+  //     return (provider.movementCounter + index) % 2 == 0
+  //         ? 'assets/images/snakeShapes/fire_snake/snake_body256_horizontal00.png'
+  //         : 'assets/images/snakeShapes/fire_snake/snake_body256_horizontal01.png';
+  //   }
+  //   if (segmentType == 'vertical') {
+  //     return (provider.movementCounter + index) % 2 == 0
+  //         ? 'assets/images/snakeShapes/fire_snake/snake_body256_vertical00 (2).png'
+  //         : 'assets/images/snakeShapes/fire_snake/snake_body256_vertical01 - Copy.png';
+  //   }
+
+  //   // Corners: use orientation-specific connector images based on turn direction
+  //   if (index > 0 && index < provider.snake.length - 1) {
+  //     Offset prevSegment = provider.snake[index - 1];
+  //     Offset nextSegment = provider.snake[index + 1];
+
+  //     double prevDx = segment.dx - prevSegment.dx;
+  //     double prevDy = segment.dy - prevSegment.dy;
+  //     double nextDx = nextSegment.dx - segment.dx;
+  //     double nextDy = nextSegment.dy - segment.dy;
+
+  //     // Example corner mapping (uncomment and add images if you have them)
+  //     // if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
+  //     //   return 'assets/images/snakeShapes/fire_snake/right2down_connector.png';
+  //   }
+
+  //   // If nothing matched → return null instead of a random image
+  //   return null;
+  // }
 
   double _getBodyRotation(
     String segmentType,

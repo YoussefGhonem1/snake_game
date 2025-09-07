@@ -71,6 +71,12 @@ flutter:
      - assets/lottie/congratulations.json
      - assets/sounds/
      - assets/lottie/
+     - assets/images/snakeShapes/fire_snake/
+     - assets/images/snakeShapes/icy_snake/
+     - assets/images/snakeShapes/golden_snake/
+     - assets/images/snakeShapes/neon_snake/
+     - assets/images/snakeShapes/cosmic_snake/
+     - assets/images/snakeShapes/new/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

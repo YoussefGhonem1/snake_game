@@ -54,11 +54,14 @@ class _SnakesStoreScreenState extends State<SnakesStoreScreen>
       selectedSnakeIndex = userData['selectedSnakeIndex'];
       ownedSnakes = userData['ownedSnakes'];
     });
+
+    debugPrint("Owned snakes: $ownedSnakes");
   }
 
   Future<void> _saveUserData() async {
     await _service.saveUserData(
       userCoins: userCoins,
+      userLevel: userLevel,
       selectedSnakeIndex: selectedSnakeIndex,
       ownedSnakes: ownedSnakes,
     );
@@ -137,12 +140,9 @@ class _SnakesStoreScreenState extends State<SnakesStoreScreen>
       ),
       body: CustomScrollView(
         slivers: [
-          // User Stats Header
           SliverToBoxAdapter(
             child: UserStatsHeader(userCoins: userCoins, userLevel: userLevel),
           ),
-
-          // Snakes Grid
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverGrid(
@@ -154,7 +154,7 @@ class _SnakesStoreScreenState extends State<SnakesStoreScreen>
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final snake = SnakeDesignsData.snakeDesigns[index];
-                final isOwned = ownedSnakes[index];
+                final isOwned = ownedSnakes.isNotEmpty && ownedSnakes[index];
                 final isSelected = selectedSnakeIndex == index;
                 final canBuy = _service.canBuySnake(
                   snake,
