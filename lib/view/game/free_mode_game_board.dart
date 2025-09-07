@@ -222,17 +222,22 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     IconData icon,
     VoidCallback onPressed,
   ) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: ColorHelper.instance.onPrimary),
-      label: Text(
-        text,
-        style: TextStyle(color: ColorHelper.instance.onPrimary),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: ColorHelper.instance.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.32,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: ColorHelper.instance.onPrimary),
+        label: Text(
+          text,
+          style: TextStyle(color: ColorHelper.instance.onPrimary),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorHelper.instance.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
       ),
     );
   }
@@ -247,37 +252,40 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
       builder: (context, child) {
         return Transform.scale(
           scale: 1.0 + (_pulseAnimation.value - 1.0) * 0.05,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.3),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: ElevatedButton.icon(
-              onPressed: onPressed,
-              icon: Icon(icon, color: Colors.amber.shade800),
-              label: Text(
-                text,
-                style: TextStyle(
-                  color: Colors.amber.shade800,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.35,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.3),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              child: ElevatedButton.icon(
+                onPressed: onPressed,
+                icon: Icon(icon, color: Colors.amber.shade800),
+                label: Text(
+                  text,
+                  style: TextStyle(
+                    color: Colors.amber.shade800,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 15,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 15,
+                  ),
+                  elevation: 8,
                 ),
-                elevation: 8,
               ),
             ),
           ),
@@ -834,6 +842,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
   Widget _buildNewAchievementDialog() {
     return Dialog(
       backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
         children: [
           // Animated background particles
@@ -849,8 +858,8 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
               return Transform.scale(
                 scale: 0.8 + (_scoreController.value * 0.2),
                 child: Container(
-                  margin: const EdgeInsets.all(20),
-                  padding: const EdgeInsets.all(30),
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.symmetric(vertical: 30),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -1039,45 +1048,70 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
   }
 
   Widget _buildGameOverDialog() {
+    final colorHelper = ColorHelper.instance;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.red.shade800, Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          gradient: colorHelper.gameBackgroundGradient,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(
+            color: colorHelper.primary.withOpacity(0.5),
+            width: 2,
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.red.shade400, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: colorHelper.primary.withOpacity(0.3),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              context.tr('you_lose'),
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            Icon(
+              Icons.sentiment_very_dissatisfied,
+              size: 70,
+              color: colorHelper.gameOverColor,
             ),
             const SizedBox(height: 20),
             Text(
-              '${context.tr('score')}: ${gameViewModel.score}',
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              context.tr('you_lose'),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: colorHelper.primary,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            const SizedBox(height: 15),
+            Text(
+              '${context.tr('score')}: ${gameViewModel.score}',
+              style: TextStyle(
+                fontSize: 20,
+                color: colorHelper.scoreColor,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'monospace',
+              ),
+            ),
+            const SizedBox(height: 35),
+            Column(
               children: [
                 _buildDialogButton(context.tr('try_again'), Icons.refresh, () {
                   Navigator.of(context).pop();
                   gameViewModel.restartGame();
                 }),
+                const SizedBox(height: 12),
                 _buildDialogButton(context.tr('exit'), Icons.exit_to_app, () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(); // Close dialog
                   Navigator.of(context).pop(); // Exit game screen
                 }),
               ],

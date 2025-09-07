@@ -21,7 +21,7 @@ void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     EasyLocalization.ensureInitialized();
-  // final prefs = await SharedPreferences.getInstance();
+  //final prefs = await SharedPreferences.getInstance();
    // await prefs.clear();
 
     await Firebase.initializeApp(
