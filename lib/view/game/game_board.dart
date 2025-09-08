@@ -37,7 +37,7 @@ class _GameBoardState extends State<GameBoard>
   late Animation<double> _glowAnimation;
   late Animation<double> _scoreAnimation;
 
-@override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -104,7 +104,7 @@ class _GameBoardState extends State<GameBoard>
       height: gridHeight,
       width: widget.width,
     );
-    
+
     // --- نهاية الكود المُعدل ---
 
     gameViewModel = Provider.of<GameViewModel>(context, listen: false);
@@ -127,7 +127,7 @@ class _GameBoardState extends State<GameBoard>
       customColumns: columns,
     );
   }
-  
+
   Widget _buildBoardBackground(GameViewModel provider) {
     final boardColor =
         provider.gameLevels[provider.currentLevelIndex].boardColor;
@@ -265,7 +265,7 @@ class _GameBoardState extends State<GameBoard>
     VoidCallback onPressed,
   ) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.32,
+      width: MediaQuery.of(context).size.width * 0.33,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, color: ColorHelper.instance.onPrimary),
