@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snake_game/core/helpers/admob_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
@@ -309,9 +310,9 @@ class GameViewModel extends ChangeNotifier {
     saveNextLevel();
     saveGameProgress().then((_) {
       _playLevelCompleteSound();
-      // UnityAdsHelper.showInterstitialAd();
+      AdMobHelper.showInterstitialAd();
       onGameCompleted();
-      notifyListeners();
+      //   notifyListeners();
     });
     saveNextLevel();
   }
@@ -331,8 +332,9 @@ class GameViewModel extends ChangeNotifier {
     }
     saveGameProgress().then((_) {
       _playGameOverSound();
+      AdMobHelper.showInterstitialAd();
       onGameOver();
-      notifyListeners();
+      // notifyListeners();
     });
   }
 
@@ -425,7 +427,7 @@ class GameViewModel extends ChangeNotifier {
 
   List<Offset> _getCornerClustersPattern() {
     List<Offset> barriers = [];
-    int clusterSize = (_rows * 0.15).floor(); // حجم الكتلة = 15% من البورد
+    int clusterSize = (_rows * 0.15).floor();
     for (int i = 1; i < clusterSize; i++) {
       for (int j = 1; j < clusterSize; j++) {
         barriers.add(Offset(i.toDouble(), j.toDouble())); // Top-Left
@@ -550,7 +552,7 @@ class GameViewModel extends ChangeNotifier {
 
       if (levelNumber > 100) {
         customBoardColor = const Color(0xFF1A1A2E).withOpacity(0.5);
-       // customGridColor = customBoardColor;
+        // customGridColor = customBoardColor;
       }
 
       int initialSnakeLength = 4 + (i ~/ 20);

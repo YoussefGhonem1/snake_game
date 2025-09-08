@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snake_game/core/helpers/admob_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
@@ -68,25 +69,24 @@ class FreeModeGameViewModel extends ChangeNotifier {
     _cellSize = min(cellWidth, cellHeight).floorToDouble();
   }
 
-void initializeGame(
+  void initializeGame(
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
-    int? customRows, // 🛑 إضافة المتغير الجديد
-    int? customColumns, // 🛑 إضافة المتغير الجديد
+    int? customRows,
+    int? customColumns,
   }) {
     _gamePadding = gamePaddings;
 
-    // 🛑 استخدام المتغيرات الجديدة لتحديد أبعاد الشبكة
     if (customRows != null && customColumns != null) {
       _rows = customRows;
       _columns = customColumns;
-      // نعيد حساب حجم الخلية بناءً على الأبعاد الجديدة
-      double cellWidth = (gamePaddings.width - gamePaddings.left - gamePaddings.right) / _columns;
+      double cellWidth =
+          (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
+          _columns;
       double cellHeight = gamePaddings.height / _rows;
       _cellSize = min(cellWidth, cellHeight).floorToDouble();
     } else {
-      // الكود القديم كخيار احتياطي
       _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
     }
 
@@ -288,8 +288,9 @@ void initializeGame(
 
     saveGameProgress().then((_) {
       _playGameOverSound();
+      AdMobHelper.showInterstitialAd();
       onGameOver();
-      notifyListeners();
+      //notifyListeners();
     });
   }
 
@@ -406,10 +407,10 @@ void initializeGame(
     return prefs.getInt('levelHighScore_$levelIndex') ?? 0;
   }
 
- static Future<int> getMaxFreeModeScore() async {
-  // This will now only return the high score for the first level (index 0)
-  return await getStaticLevelHighScore(0);
-}
+  static Future<int> getMaxFreeModeScore() async {
+    // This will now only return the high score for the first level (index 0)
+    return await getStaticLevelHighScore(0);
+  }
 
   // Sound Methods
   void _playEatSound() {
