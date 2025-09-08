@@ -14,7 +14,7 @@ class SnakesStoreService {
     final prefs = await SharedPreferences.getInstance();
 
     final userCoins = prefs.getInt(AppStrings.userCoins) ?? 0;
-    final userLevel = prefs.getInt(AppStrings.userLevel) ?? 1;
+    final userLevel = prefs.getInt(AppStrings.userLevel) ?? 10;
     final selectedSnakeIndex = prefs.getInt(AppStrings.selectedSnakeIndex) ?? 0;
 
     final ownedSnakes = List.generate(SnakeDesignsData.snakeDesigns.length, (
