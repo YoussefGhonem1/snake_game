@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     children: [
                       // Top section with logo and title
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [_buildLogo()],
@@ -161,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Expanded(
                         flex: 4,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             // Score display
@@ -173,16 +174,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
 
                       //Bottom section with settings
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildBottomActions(),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
+                      // Expanded(
+                      //   flex: 2,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      _buildBottomActions(),
+                      //       const SizedBox(height: 20),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -240,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               // Game Title
               Text(
                 context.tr('snake_game'),
@@ -343,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 },
               ),
 
-              const SizedBox(height: 20),
+              //const SizedBox(height: 20),
 
               // Free Mode button
               _buildMainButton(
