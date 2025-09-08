@@ -17,7 +17,7 @@ class GameViewModel extends ChangeNotifier {
     loadGameProgress();
     _initializeLevelsData();
   }
-  int _rows = 20;
+  int _rows = 30;
   int _columns = 20;
   double _cellSize = 20.0;
 
@@ -112,8 +112,8 @@ class GameViewModel extends ChangeNotifier {
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
-    int? customRows, 
-    int? customColumns, 
+    int? customRows,
+    int? customColumns,
   }) {
     isGameInitialized = false;
     notifyListeners();
@@ -420,14 +420,14 @@ class GameViewModel extends ChangeNotifier {
       }
     }
 
-    // في أسوأ الحالات، نعود لمكان آمن معروف ومضمون
     return const Offset(10, 10);
   }
 
   List<Offset> _getCornerClustersPattern() {
     List<Offset> barriers = [];
-    for (int i = 2; i < 6; i++) {
-      for (int j = 2; j < 6; j++) {
+    int clusterSize = (_rows * 0.15).floor(); // حجم الكتلة = 15% من البورد
+    for (int i = 1; i < clusterSize; i++) {
+      for (int j = 1; j < clusterSize; j++) {
         barriers.add(Offset(i.toDouble(), j.toDouble())); // Top-Left
         barriers.add(
           Offset((_columns - 1 - i).toDouble(), j.toDouble()),
@@ -445,55 +445,72 @@ class GameViewModel extends ChangeNotifier {
 
   List<Offset> _getMazePattern() {
     List<Offset> barriers = [];
-    for (int i = 0; i < 14; i++) {
-      barriers.add(Offset(4, i.toDouble()));
-      barriers.add(Offset(15, (_rows - 1 - i).toDouble()));
+    int leftX = (_columns * 0.2).floor();
+    int rightX = (_columns * 0.8).floor();
+    int verticalHeight = (_rows * 0.7).floor();
+    int midY = (_rows * 0.35).floor();
+
+    for (int i = 0; i < verticalHeight; i++) {
+      barriers.add(Offset(leftX.toDouble(), i.toDouble()));
+      barriers.add(Offset(rightX.toDouble(), (_rows - 1 - i).toDouble()));
     }
-    for (int i = 9; i < _columns; i++) {
-      barriers.add(Offset(i.toDouble(), 7));
+    for (int i = (_columns ~/ 2); i < _columns; i++) {
+      barriers.add(Offset(i.toDouble(), midY.toDouble()));
     }
     return barriers;
   }
 
   List<Offset> _getParallelLinesPattern() {
     List<Offset> barriers = [];
-    for (int i = 4; i < _rows - 4; i++) {
-      barriers.add(Offset(6, i.toDouble()));
-      barriers.add(Offset(13, i.toDouble()));
+    int leftX = (_columns * 0.3).floor();
+    int rightX = (_columns * 0.65).floor();
+    for (int i = (_rows * 0.1).floor(); i < (_rows * 0.9).floor(); i++) {
+      barriers.add(Offset(leftX.toDouble(), i.toDouble()));
+      barriers.add(Offset(rightX.toDouble(), i.toDouble()));
     }
     return barriers;
   }
 
   List<Offset> _getCrossPattern() {
     List<Offset> barriers = [];
-    for (int i = 5; i < _columns - 5; i++) {
-      barriers.add(Offset(i.toDouble(), 9));
+    int midX = (_columns ~/ 2);
+    int midY = (_rows ~/ 2);
+
+    for (int i = (_columns * 0.2).floor(); i < (_columns * 0.8).floor(); i++) {
+      barriers.add(Offset(i.toDouble(), midY.toDouble()));
     }
-    for (int i = 5; i < _rows - 5; i++) {
-      barriers.add(Offset(9, i.toDouble()));
+    for (int i = (_rows * 0.2).floor(); i < (_rows * 0.8).floor(); i++) {
+      barriers.add(Offset(midX.toDouble(), i.toDouble()));
     }
     return barriers;
   }
 
   List<Offset> _getCentralBoxPattern() {
     List<Offset> barriers = [];
-    for (int i = 6; i < _columns - 6; i++) {
-      barriers.add(Offset(i.toDouble(), 6));
+    int leftX = (_columns * 0.25).floor();
+    int rightX = (_columns * 0.75).floor();
+    int topY = (_rows * 0.25).floor();
+    int bottomY = (_rows * 0.75).floor();
+
+    for (int i = leftX; i <= rightX; i++) {
+      barriers.add(Offset(i.toDouble(), topY.toDouble())); // top
+      barriers.add(Offset(i.toDouble(), bottomY.toDouble())); // bottom
     }
-    for (int i = 7; i < _rows - 7; i++) {
-      if (i < (_rows / 2) - 2 || i > (_rows / 2) + 1) {
-        barriers.add(Offset(6, i.toDouble()));
-        barriers.add(Offset(_columns - 7, i.toDouble()));
-      }
+    for (int j = topY; j <= bottomY; j++) {
+      barriers.add(Offset(leftX.toDouble(), j.toDouble())); // left
+      barriers.add(Offset(rightX.toDouble(), j.toDouble())); // right
     }
     return barriers;
   }
 
   List<Offset> _getDiagonalLinesPattern() {
     List<Offset> barriers = [];
-    for (int i = 4; i < 16; i++) {
-      barriers.add(Offset(i.toDouble(), i.toDouble()));
-      barriers.add(Offset((_columns - 1 - i).toDouble(), i.toDouble()));
+    int minDim = min(_rows, _columns);
+    for (int i = 2; i < minDim - 2; i++) {
+      barriers.add(Offset(i.toDouble(), i.toDouble())); // \ main diagonal
+      barriers.add(
+        Offset((_columns - 1 - i).toDouble(), i.toDouble()),
+      ); // / anti-diagonal
     }
     return barriers;
   }
@@ -533,7 +550,7 @@ class GameViewModel extends ChangeNotifier {
 
       if (levelNumber > 100) {
         customBoardColor = const Color(0xFF1A1A2E).withOpacity(0.5);
-        customGridColor = customBoardColor;
+       // customGridColor = customBoardColor;
       }
 
       int initialSnakeLength = 4 + (i ~/ 20);

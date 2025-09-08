@@ -125,8 +125,8 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
 
   getLevelWidget(BuildContext context, int index) {
     // Use the new enhanced score system for level unlocking
-    bool isLevelUnlocked = index < gameScreenViewModel.maxUnlockedLevel;
-    //bool isLevelUnlocked =true;
+   // bool isLevelUnlocked = index < gameScreenViewModel.maxUnlockedLevel;
+    bool isLevelUnlocked =true;
 
     // In free mode, show all unlocked levels; in level mode, use traditional progression
     if (!isLevelUnlocked && (_isFreeMode || index > 0)) {
