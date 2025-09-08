@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
 import 'package:snake_game/view/game/free_mode_game_screen.dart';
 import 'package:snake_game/view/game/open_game_levels.dart';
+import 'package:snake_game/view/home_screen/splash_screen.dart';
 import 'package:snake_game/view/settings/language_settings.dart';
 import 'package:snake_game/view/settings/privacy_policy/privacy_policy.dart';
 import 'package:snake_game/view/snakes_store/snakes_store_screen.dart';
@@ -28,12 +29,16 @@ class NavigatorHelper {
         );
       case RoutePath.languageScreen:
         return MaterialPageRoute(builder: (_) => const LanguageSettings());
+      case RoutePath.splashScreen:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case RoutePath.privacyPolicyScreen:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
       case RoutePath.snakeGameScreen:
         return MaterialPageRoute(builder: (_) => const SnakesStoreScreen());
-        case RoutePath.freeModeGameScreen:
-  return MaterialPageRoute(builder: (context) => const FreeModeGameScreen());
+      case RoutePath.freeModeGameScreen:
+        return MaterialPageRoute(
+          builder: (context) => const FreeModeGameScreen(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) =>
