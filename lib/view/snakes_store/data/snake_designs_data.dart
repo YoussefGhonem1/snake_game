@@ -91,13 +91,24 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //4
-      name: 'neon_snake'.tr(),
+      name: 'Fire_Snake'.tr(),
       headColor: Color(0xFF00FF41),
       bodyColor: Color(0xFF00CC33),
       price: 250,
       requiredLevel: 10,
-      imgPaths: ['assets/images/snakeShapes/redSnake.jpg'],
-      fit: BoxFit.contain,
+      imgPaths: [
+        'assets/images/firesnake/head.png',
+        'assets/images/firesnake/tail.png',
+        'assets/images/firesnake/horizontal00.png',
+        'assets/images/firesnake/horizontal01.png',
+        'assets/images/firesnake/vertical00.png',
+        'assets/images/firesnake/vertical01.png',
+        'assets/images/firesnake/bottom-right.png',
+        'assets/images/firesnake/bottom-left.png',
+        'assets/images/firesnake/top-right.png',
+        'assets/images/firesnake/top-left.png',
+      ],
+      fit: BoxFit.fill,
     ),
     SnakeDesign(
       //5
