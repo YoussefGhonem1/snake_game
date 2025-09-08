@@ -5,6 +5,7 @@ import 'package:snake_game/core/constants/route_manager.dart';
 import 'package:snake_game/core/helpers/navigate_helper.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/model/model/game_padding.dart';
+import 'package:snake_game/view/snakes_store/data/snake_designs_data.dart';
 import 'package:snake_game/view_model/game/game_view_model.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +17,12 @@ class GameBoard extends StatefulWidget {
     required this.height,
     required this.width,
     this.startIndex,
+    required this.selectedSnakeIndex,
   });
   final double height;
   final double width;
   final int? startIndex;
+  final int selectedSnakeIndex;
   @override
   State<GameBoard> createState() => _GameBoardState();
 }
@@ -515,7 +518,9 @@ class _GameBoardState extends State<GameBoard>
           width: provider.cellSize * 1.3, // More reasonable size
           height: provider.cellSize * 1.3,
           child: Image.asset(
-            'assets/images/LorenzosNewSnakeAssets/head/Head.png',
+            SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[0],
             fit: BoxFit.contain,
           ),
         ),
@@ -532,7 +537,7 @@ class _GameBoardState extends State<GameBoard>
         width: provider.cellSize,
         height: provider.cellSize,
         child: Image.asset(
-          'assets/images/LorenzosNewSnakeAssets/tail/256px/tail_final00.png',
+          SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[1],
           fit: BoxFit.contain,
         ),
       ),
@@ -542,7 +547,12 @@ class _GameBoardState extends State<GameBoard>
   Widget _buildSnakeBody(GameViewModel provider, int index, Offset segment) {
     // Check if this segment is a corner (direction change)
     String segmentType = _getSegmentType(provider, index, segment);
-    String imagePath = _getBodyImagePath(segmentType, index, provider, segment);
+    String? imagePath = _getBodyImagePath(
+      segmentType,
+      index,
+      provider,
+      segment,
+    );
     double rotation = _getBodyRotation(segmentType, provider, index, segment);
 
     // Adjust size and position based on segment type
@@ -573,7 +583,14 @@ class _GameBoardState extends State<GameBoard>
         child: Container(
           width: segmentWidth,
           height: segmentHeight,
-          child: Image.asset(imagePath, fit: BoxFit.contain),
+          child: imagePath != null
+              ? Image.asset(
+                  imagePath,
+                  fit: SnakeDesignsData
+                      .snakeDesigns[widget.selectedSnakeIndex]
+                      .fit,
+                )
+              : null,
         ),
       ),
     );
@@ -644,7 +661,7 @@ class _GameBoardState extends State<GameBoard>
     }
   }
 
-  String _getBodyImagePath(
+  String? _getBodyImagePath(
     String segmentType,
     int index,
     GameViewModel provider,
@@ -653,13 +670,17 @@ class _GameBoardState extends State<GameBoard>
     // Straight segments keep alternating images for wavy effect
     if (segmentType == 'horizontal') {
       return (gameViewModel.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal01.png';
+          ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[2]
+          : SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[3];
     }
     if (segmentType == 'vertical') {
       return (gameViewModel.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical01.png';
+          ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[4]
+          : SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[5];
     }
 
     // Corners: use orientation-specific connector images based on turn direction
@@ -675,23 +696,31 @@ class _GameBoardState extends State<GameBoard>
       // Updated mapping with new clearer image names
       // right2down: bottom-right corner (coming from left/up, going to right/down)
       if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2down_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[6];
 
       // left2down: bottom-left corner (coming from right/up, going to left/down)
       if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2down_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[7];
 
       // right2up: top-right corner (coming from left/down, going to right/up)
       if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2up_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[8];
 
       // left2up: top-left corner (coming from right/down, going to left/up)
       if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2up_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[9];
     }
 
     // Fallback
-    return 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png';
+    return null;
   }
 
   double _getBodyRotation(

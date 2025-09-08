@@ -367,8 +367,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 gradient: LinearGradient(
                   colors: [colorHelper.primary, colorHelper.levelProgressColor],
                 ),
+
                 onTap: () {
-                  navigateTo(context, RoutePath.snakeGameScreen);
+                  Navigator.pushNamed(context, RoutePath.snakeGameScreen).then((
+                    updated,
+                  ) {
+                    if (updated == true) {
+                      getCurrentScore();
+                    }
+                  });
                 },
               ),
             ],

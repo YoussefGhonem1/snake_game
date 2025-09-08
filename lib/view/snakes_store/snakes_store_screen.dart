@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/game_colors.dart';
 import '../../core/helpers/navigate_helper.dart';
 import '../../model/snake_design.dart';
@@ -58,7 +59,10 @@ class _SnakesStoreScreenState extends State<SnakesStoreScreen>
     debugPrint("Owned snakes: $ownedSnakes");
   }
 
+  int levelIndex = 0;
   Future<void> _saveUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('levelHighScore_$levelIndex', userCoins);
     await _service.saveUserData(
       userCoins: userCoins,
       userLevel: userLevel,
@@ -126,7 +130,7 @@ class _SnakesStoreScreenState extends State<SnakesStoreScreen>
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: ColorHelper.instance.onSecondary),
-          onPressed: () => navigateBack(context),
+          onPressed: () => Navigator.pop(context, true),
         ),
         title: Text(
           context.tr('snake_store'),
