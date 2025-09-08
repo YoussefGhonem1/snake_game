@@ -78,19 +78,23 @@ class SnakeCard extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [snake.headColor, snake.bodyColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        image: DecorationImage(
+          image: AssetImage(snake.imgPaths[0]),
+          fit: BoxFit.fitHeight,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: snake.headColor.withOpacity(0.3),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        shape: BoxShape.circle,
+        // gradient: LinearGradient(
+        //   colors: [snake.headColor, snake.bodyColor],
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        // ),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: snake.headColor.withOpacity(0.3),
+        //     blurRadius: 10,
+        //     spreadRadius: 2,
+        //   ),
+        // ],
       ),
       child: Stack(
         children: [

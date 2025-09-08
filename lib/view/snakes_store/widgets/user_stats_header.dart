@@ -36,7 +36,7 @@ class UserStatsHeader extends StatelessWidget {
         children: [
           _buildStatItem(
             Icons.monetization_on,
-            context.tr('coins'),
+            context.tr('Points'),
             userCoins.toString(),
             ColorHelper.instance.scoreColor,
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snake_game/core/constants/game_colors.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/model/model/game_padding.dart';
+import 'package:snake_game/view/snakes_store/data/snake_designs_data.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -19,7 +20,6 @@ class FreeModeGameBoard extends StatefulWidget {
   final double width;
   final int? startIndex;
   final int selectedSnakeIndex;
-
   @override
   State<FreeModeGameBoard> createState() => _FreeModeGameBoardState();
 }
@@ -38,7 +38,6 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
     // Initialize animation controllers
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -514,7 +513,9 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
           width: provider.cellSize * 1.3, // More reasonable size
           height: provider.cellSize * 1.3,
           child: Image.asset(
-            'assets/images/LorenzosNewSnakeAssets/head/Head.png',
+            SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[0],
             fit: BoxFit.contain,
           ),
         ),
@@ -531,7 +532,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
         width: provider.cellSize,
         height: provider.cellSize,
         child: Image.asset(
-          'assets/images/LorenzosNewSnakeAssets/tail/256px/tail_final00.png',
+          SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[1],
           fit: BoxFit.contain,
         ),
       ),
@@ -545,7 +546,12 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
   ) {
     // Check if this segment is a corner (direction change)
     String segmentType = _getSegmentType(provider, index, segment);
-    String imagePath = _getBodyImagePath(segmentType, index, provider, segment);
+    String? imagePath = _getBodyImagePath(
+      segmentType,
+      index,
+      provider,
+      segment,
+    );
     double rotation = _getBodyRotation(segmentType, provider, index, segment);
 
     // Adjust size and position based on segment type
@@ -564,7 +570,14 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
         child: SizedBox(
           width: segmentWidth,
           height: segmentHeight,
-          child: Image.asset(imagePath, fit: BoxFit.contain),
+          child: imagePath != null
+              ? Image.asset(
+                  imagePath,
+                  fit: SnakeDesignsData
+                      .snakeDesigns[widget.selectedSnakeIndex]
+                      .fit,
+                )
+              : null,
         ),
       ),
     );
@@ -639,7 +652,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     }
   }
 
-  String _getBodyImagePath(
+  String? _getBodyImagePath(
     String segmentType,
     int index,
     FreeModeGameViewModel provider,
@@ -648,13 +661,17 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     // Straight segments keep alternating images for wavy effect
     if (segmentType == 'horizontal') {
       return (provider.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal01.png';
+          ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[2]
+          : SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[3];
     }
     if (segmentType == 'vertical') {
       return (provider.movementCounter + index) % 2 == 0
-          ? 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical00.png'
-          : 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_vertical01.png';
+          ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[4]
+          : SnakeDesignsData
+                .snakeDesigns[widget.selectedSnakeIndex]
+                .imgPaths[5];
     }
 
     // Corners: use orientation-specific connector images based on turn direction
@@ -670,23 +687,35 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
       // Updated mapping with new clearer image names
       // right2down: bottom-right corner (coming from left/up, going to right/down)
       if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2down_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[6];
 
       // left2down: bottom-left corner (coming from right/up, going to left/down)
       if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2down_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[7];
 
       // right2up: top-right corner (coming from left/down, going to right/up)
       if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/right2up_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[8];
 
       // left2up: top-left corner (coming from right/down, going to left/up)
       if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0))
-        return 'assets/images/LorenzosNewSnakeAssets/body/256px/left2up_connector.png';
+        return SnakeDesignsData
+            .snakeDesigns[widget.selectedSnakeIndex]
+            .imgPaths[9];
     }
 
     // Fallback for straight segments
-    return 'assets/images/LorenzosNewSnakeAssets/body/256px/snake_body256_horizontal00.png';
+    // return SnakeDesignsData
+    //     .snakeDesigns[widget.selectedSnakeIndex]
+    //     .imgPaths[10];
+
+    return null;
   }
 
   double _getBodyRotation(

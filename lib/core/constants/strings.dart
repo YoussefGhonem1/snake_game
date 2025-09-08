@@ -1,5 +1,4 @@
-class AppStrings{
-
+class AppStrings {
   static const String selectedLanguageKey = 'selectedLanguageKey';
   static const String isSwipeControl = 'isSwipeControl';
   static const String userCoins = 'userCoins';

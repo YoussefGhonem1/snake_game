@@ -8,6 +8,7 @@ class SnakeDesign {
   final int price;
   final int requiredLevel;
   final bool isDefault;
+  final BoxFit fit;
 
   SnakeDesign({
     required this.name,
@@ -17,5 +18,6 @@ class SnakeDesign {
     required this.requiredLevel,
     required this.imgPaths,
     this.isDefault = false,
+    required this.fit,
   });
 }

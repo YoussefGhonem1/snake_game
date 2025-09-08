@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/core/constants/game_colors.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
+import 'package:snake_game/core/constants/strings.dart';
 import 'package:snake_game/core/helpers/navigate_helper.dart';
 import 'package:snake_game/core/helpers/language_helper.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
@@ -99,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final maxFreeModeScore =
           await FreeModeGameViewModel.getMaxFreeModeScore();
       gScore = maxFreeModeScore.toString().padLeft(6, '0');
-
+      SharedPreferences _sharedPreferences;
+      _sharedPreferences = await SharedPreferences.getInstance();
+      _sharedPreferences.setInt(AppStrings.userCoins, int.tryParse(gScore)!);
       setState(() {
         screenLoading = false;
       });
