@@ -75,7 +75,7 @@ class _GameScreenState extends State<GameScreen> {
                     child: Directionality(
                       textDirection: TextDirection.ltr,
                       child: GameBoard(
-                        height: height * 0.65, // Reduced for better centering
+                        height: height * 0.8, // Reduced for better centering
                         width: width * 0.95, // Slight margin on sides
                         startIndex: levelIndex,
                         selectedSnakeIndex: selectedSnakeIndex,

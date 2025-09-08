@@ -67,26 +67,30 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    double availableWidth = widget.width - 40;
-    double availableHeight = widget.height - 80;
 
-    double cellWidth = availableWidth / 20;
-    double cellHeight = availableHeight / 20;
-    double cellSize = (cellWidth < cellHeight ? cellWidth : cellHeight)
-        .floorToDouble();
+    double topBarHeight = 120.0;
+    double bottomPadding = 20.0;
+
+    double availableWidth = widget.width - 20;
+    double availableHeight = widget.height - topBarHeight - bottomPadding;
+
+    int columns = 20;
+    double cellSize = (availableWidth / columns).floorToDouble();
+
+    int rows = (availableHeight / cellSize).floor();
 
     if (cellSize < 15.0) cellSize = 15.0;
     if (cellSize > 30.0) cellSize = 30.0;
 
-    double gridWidth = cellSize * 20;
-    double gridHeight = cellSize * 20;
+    double gridWidth = cellSize * columns;
+    double gridHeight = cellSize * rows;
 
     double leftPadding = (widget.width - gridWidth) / 2;
 
     GamePadding gamePaddings = GamePadding(
       left: leftPadding,
       right: leftPadding,
-      top: 100.0,
+      top: topBarHeight,
       height: gridHeight,
       width: widget.width,
     );
@@ -101,6 +105,8 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
       context,
       gamePaddings,
       startLevelIndex: widget.startIndex,
+      customRows: rows,
+      customColumns: columns,
     );
   }
 

@@ -112,12 +112,25 @@ class GameViewModel extends ChangeNotifier {
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
+    int? customRows, 
+    int? customColumns, 
   }) {
     isGameInitialized = false;
     notifyListeners();
 
     _gamePadding = gamePaddings;
-    _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+
+    if (customRows != null && customColumns != null) {
+      _rows = customRows;
+      _columns = customColumns;
+      double cellWidth =
+          (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
+          _columns;
+      double cellHeight = gamePaddings.height / _rows;
+      _cellSize = min(cellWidth, cellHeight).floorToDouble();
+    } else {
+      _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+    }
 
     currentLevelIndex = startLevelIndex ?? 0;
     maxLevels = gameLevels.length;

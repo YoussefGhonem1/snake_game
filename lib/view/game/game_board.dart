@@ -37,7 +37,7 @@ class _GameBoardState extends State<GameBoard>
   late Animation<double> _glowAnimation;
   late Animation<double> _scoreAnimation;
 
-  @override
+@override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -70,34 +70,42 @@ class _GameBoardState extends State<GameBoard>
       CurvedAnimation(parent: _scoreController, curve: Curves.elasticOut),
     );
 
-    // Calculate optimal grid size to fit green zone perfectly
-    double availableWidth = widget.width - 40; // Minimal padding
-    double availableHeight = widget.height - 80; // Account for score bar space
+    // --- بداية الكود المُعدل ---
 
-    // Calculate cell size to fit 20x20 grid perfectly
-    double cellWidth = availableWidth / 20;
-    double cellHeight = availableHeight / 20;
-    double cellSize = (cellWidth < cellHeight ? cellWidth : cellHeight)
-        .floorToDouble();
+    // حساب الأبعاد المثالية للشبكة لتناسب الشاشة
+    double topBarHeight = 120.0; // ارتفاع تقريبي للشريط العلوي مع بعض الهوامش
+    double bottomPadding = 20.0; // هامش بسيط في الأسفل
 
-    // Ensure reasonable cell size bounds
+    double availableWidth = widget.width - 20; // هامش أفقي بسيط
+    double availableHeight = widget.height - topBarHeight - bottomPadding;
+
+    // سنبقي عدد الأعمدة ثابتًا ونحسب حجم الخلية بناءً على العرض
+    int columns = 20;
+    double cellSize = (availableWidth / columns).floorToDouble();
+
+    // الآن، نحسب عدد الصفوف التي يمكن أن تتناسب مع الارتفاع المتاح
+    int rows = (availableHeight / cellSize).floor();
+
+    // التأكد من أن حجم الخلية ضمن حدود معقولة
     if (cellSize < 15.0) cellSize = 15.0;
     if (cellSize > 30.0) cellSize = 30.0;
 
-    // Calculate exact grid dimensions
-    double gridWidth = cellSize * 20;
-    double gridHeight = cellSize * 20;
+    // إعادة حساب أبعاد الشبكة النهائية باستخدام حجم الخلية النهائي
+    double gridWidth = cellSize * columns;
+    double gridHeight = cellSize * rows;
 
-    // Center the grid horizontally
+    // توسيط الشبكة أفقيًا
     double leftPadding = (widget.width - gridWidth) / 2;
 
     GamePadding gamePaddings = GamePadding(
       left: leftPadding,
       right: leftPadding,
-      top: 100.0, // Moved score bar higher up
-      height: gridHeight, // Exact grid height
+      top: topBarHeight, // ترك مساحة للشريط العلوي
+      height: gridHeight,
       width: widget.width,
     );
+    
+    // --- نهاية الكود المُعدل ---
 
     gameViewModel = Provider.of<GameViewModel>(context, listen: false);
     gameViewModel.bigScoreAnimationController = AnimationController(
@@ -109,13 +117,17 @@ class _GameBoardState extends State<GameBoard>
       duration: const Duration(seconds: 2),
     );
 
+    // تم إضافة customRows و customColumns هنا
+    // تأكد من تعديل دالة initializeGame لتقبل هذه المتغيرات
     gameViewModel.initializeGame(
       context,
       gamePaddings,
       startLevelIndex: widget.startIndex,
+      customRows: rows,
+      customColumns: columns,
     );
   }
-
+  
   Widget _buildBoardBackground(GameViewModel provider) {
     final boardColor =
         provider.gameLevels[provider.currentLevelIndex].boardColor;
@@ -341,7 +353,7 @@ class _GameBoardState extends State<GameBoard>
       top:
           provider.gamePadding.top +
           25, // Minimal offset for maximum game space
-      bottom: 65, // Final micro-adjustment to show complete snake
+      bottom: 10, // Final micro-adjustment to show complete snake
       child: Center(
         child: Container(
           width:

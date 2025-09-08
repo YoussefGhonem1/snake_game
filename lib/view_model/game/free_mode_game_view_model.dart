@@ -68,13 +68,28 @@ class FreeModeGameViewModel extends ChangeNotifier {
     _cellSize = min(cellWidth, cellHeight).floorToDouble();
   }
 
-  void initializeGame(
+void initializeGame(
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
+    int? customRows, // 🛑 إضافة المتغير الجديد
+    int? customColumns, // 🛑 إضافة المتغير الجديد
   }) {
     _gamePadding = gamePaddings;
-    _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+
+    // 🛑 استخدام المتغيرات الجديدة لتحديد أبعاد الشبكة
+    if (customRows != null && customColumns != null) {
+      _rows = customRows;
+      _columns = customColumns;
+      // نعيد حساب حجم الخلية بناءً على الأبعاد الجديدة
+      double cellWidth = (gamePaddings.width - gamePaddings.left - gamePaddings.right) / _columns;
+      double cellHeight = gamePaddings.height / _rows;
+      _cellSize = min(cellWidth, cellHeight).floorToDouble();
+    } else {
+      // الكود القديم كخيار احتياطي
+      _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+    }
+
     currentLevelIndex = startLevelIndex ?? 0;
 
     // Define the base levels for map layouts
