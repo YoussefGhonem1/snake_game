@@ -153,5 +153,26 @@ class SnakeDesignsData {
       ],
       fit: BoxFit.fill,
     ),
+    SnakeDesign(
+      //7
+      name: ' Neon_snake'.tr(),
+      headColor: Color(0xFF6A0572),
+      bodyColor: Color(0xFFAB83A1),
+      price: 500,
+      requiredLevel: 20,
+      imgPaths: [
+        'assets/images/neonsnake/head.png',
+        'assets/images/neonsnake/tail.png',
+        'assets/images/neonsnake/horizontal00.png',
+        'assets/images/neonsnake/horizontal01.png',
+        'assets/images/neonsnake/vertical00.png',
+        'assets/images/neonsnake/vertical01.png',
+        'assets/images/neonsnake/bottom-right.png',
+        'assets/images/neonsnake/bottom-left.png',
+        'assets/images/neonsnake/top-right.png',
+        'assets/images/neonsnake/top-left.png',
+      ],
+      fit: BoxFit.fill,
+    ),
   ];
 }
