@@ -76,6 +76,7 @@ flutter:
      - assets/images/fourthsnake/
      - assets/images/firesnake/
      - assets/images/icysnake/
+     - assets/images/cosmicsnake/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

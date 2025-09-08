@@ -131,5 +131,27 @@ class SnakeDesignsData {
       ],
       fit: BoxFit.fill,
     ),
+
+    SnakeDesign(
+      //6
+      name: 'Cosmic_snake'.tr(),
+      headColor: Color(0xFF6A0572),
+      bodyColor: Color(0xFFAB83A1),
+      price: 500,
+      requiredLevel: 20,
+      imgPaths: [
+        'assets/images/cosmicsnake/head.png',
+        'assets/images/cosmicsnake/tail.png',
+        'assets/images/cosmicsnake/horizontal.png',
+        'assets/images/cosmicsnake/horizontal.png',
+        'assets/images/cosmicsnake/vertical.png',
+        'assets/images/cosmicsnake/vertical.png',
+        'assets/images/cosmicsnake/bottom-right.png',
+        'assets/images/cosmicsnake/bottom-left.png',
+        'assets/images/cosmicsnake/top-right.png',
+        'assets/images/cosmicsnake/top-left.png',
+      ],
+      fit: BoxFit.fill,
+    ),
   ];
 }
