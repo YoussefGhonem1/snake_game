@@ -75,7 +75,7 @@ class _FreeModeGameScreenState extends State<FreeModeGameScreen> {
                         height: height * 0.65, // Reduced for better centering
                         width: width * 0.95, // Slight margin on sides
                         startIndex: widget.startLevelIndex,
-                        selectedSnakeIndex: selectedSnakeIndex,
+                        selectedSnakeIndex: 3,
                       ),
                     ),
                   ),
