@@ -21,8 +21,8 @@ void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     EasyLocalization.ensureInitialized();
-   // final prefs = await SharedPreferences.getInstance();
-   // await prefs.clear();
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.clear();
 
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -137,7 +137,7 @@ class GameApp extends StatelessWidget {
       providers: [ChangeNotifierProvider(create: (_) => GameViewModel())],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: RoutePath.homeScreen,
+        initialRoute: RoutePath.splashScreen,
         onGenerateRoute: NavigatorHelper.instance.generateRoute,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

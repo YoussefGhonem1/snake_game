@@ -210,38 +210,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           scale: _logoAnimation.value,
           child: Column(
             children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      colorHelper.snakeHeadColor,
-                      colorHelper.snakeBodyColor,
-                      colorHelper.snakeBodyGradientEnd,
-                    ],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorHelper.snakeHeadColor.withOpacity(0.6),
-                      blurRadius: 30,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/snakesAr.png',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.contain,
-                    color: Colors.white,
-                    colorBlendMode: BlendMode.srcIn,
-                  ),
+              // Container(
+              //   width: 120,
+              //   height: 120,
+              //   decoration: BoxDecoration(
+              //     gradient: RadialGradient(
+              //       colors: [
+              //         colorHelper.snakeHeadColor,
+              //         colorHelper.snakeBodyColor,
+              //         colorHelper.snakeBodyGradientEnd,
+              //       ],
+              //     ),
+              //     shape: BoxShape.circle,
+              //     boxShadow: [
+              //       BoxShadow(
+              //         color: colorHelper.snakeHeadColor.withOpacity(0.6),
+              //         blurRadius: 30,
+              //         spreadRadius: 10,
+              //       ),
+              //     ],
+              //   ),
+              Center(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.contain,
+                  //scolor: Colors.white,
+                  colorBlendMode: BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 10),
+              //const SizedBox(height: 10),
               // Game Title
               Text(
                 context.tr('snake_game'),
@@ -259,7 +258,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
             ],
           ),
         );

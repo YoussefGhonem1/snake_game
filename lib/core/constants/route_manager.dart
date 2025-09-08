@@ -5,8 +5,7 @@ class RoutePath {
   static const settingsScreen = "/settingsScreen";
   static const languageScreen = "/languageScreen";
   static const privacyPolicyScreen = "/privacyPolicyScreen";
-  static const splashScreen = "/splashScreen";
+  static const splashScreen = "/splash";
   static const snakeGameScreen = "/snakeGameScreen";
-  static const  freeModeGameScreen = '/freeModeGameScreen'; 
-
+  static const freeModeGameScreen = '/freeModeGameScreen';
 }

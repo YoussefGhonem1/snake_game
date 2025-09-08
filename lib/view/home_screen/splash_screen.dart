@@ -73,6 +73,27 @@ class _SplashScreenState extends State<SplashScreen>
                   ..forward();
               },
             ),
+            // Positioned(
+            //   left: width * 0.335,
+            //   top: height * 0.16,
+            //   child: AnimatedBuilder(
+            //     animation: _animationController,
+            //     builder: (context, child) {
+            //       return Opacity(
+            //         opacity: _animationController.value,
+            //         child: Transform.scale(
+            //           scale: _scaleAnimation.value,
+            //           child: child,
+            //         ),
+            //       );
+            //     },
+            //     child: Container(
+            //       width: 300,
+            //       height: 300,
+            //       child: Image.asset("assets/images/logo.png"),
+            //     ),
+            //   ),
+            // ),
             Positioned(
               left: width * 0.335,
               top: height * 0.16,
@@ -87,10 +108,26 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   );
                 },
-                child: Container(
-                  width: 125,
-                  height: 125,
-                  child: Image.asset("assets/images/snakesAr.png"),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // اللوجو
+                    SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image.asset("assets/images/logo.png"),
+                    ),
+                    const SizedBox(height: 20),
+                    // النص
+                    const Text(
+                      "Snake Game",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
