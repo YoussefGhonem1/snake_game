@@ -112,12 +112,25 @@ class GameViewModel extends ChangeNotifier {
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
+    int? customRows, 
+    int? customColumns, 
   }) {
     isGameInitialized = false;
     notifyListeners();
 
     _gamePadding = gamePaddings;
-    _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+
+    if (customRows != null && customColumns != null) {
+      _rows = customRows;
+      _columns = customColumns;
+      double cellWidth =
+          (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
+          _columns;
+      double cellHeight = gamePaddings.height / _rows;
+      _cellSize = min(cellWidth, cellHeight).floorToDouble();
+    } else {
+      _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+    }
 
     currentLevelIndex = startLevelIndex ?? 0;
     maxLevels = gameLevels.length;
@@ -338,67 +351,71 @@ class GameViewModel extends ChangeNotifier {
         _food == _bigScoreCell);
   }
 
-
-Offset _findSafeStartingPosition(List<Offset> barriers, int initialSnakeLength) {
-  List<Offset> allPossiblePositions = [];
-  for (int y = initialSnakeLength; y < _rows - 2; y++) {
-    for (int x = 2; x < _columns - 2; x++) {
-      allPossiblePositions.add(Offset(x.toDouble(), y.toDouble()));
+  Offset _findSafeStartingPosition(
+    List<Offset> barriers,
+    int initialSnakeLength,
+  ) {
+    List<Offset> allPossiblePositions = [];
+    for (int y = initialSnakeLength; y < _rows - 2; y++) {
+      for (int x = 2; x < _columns - 2; x++) {
+        allPossiblePositions.add(Offset(x.toDouble(), y.toDouble()));
+      }
     }
-  }
 
-  allPossiblePositions.shuffle(Random());
+    allPossiblePositions.shuffle(Random());
 
-  for (Offset potentialHeadPos in allPossiblePositions) {
-    bool isCompletelySafe = true;
+    for (Offset potentialHeadPos in allPossiblePositions) {
+      bool isCompletelySafe = true;
 
-    List<Offset> potentialSnake = List.generate(
-        initialSnakeLength, (index) => Offset(potentialHeadPos.dx, potentialHeadPos.dy - index));
+      List<Offset> potentialSnake = List.generate(
+        initialSnakeLength,
+        (index) => Offset(potentialHeadPos.dx, potentialHeadPos.dy - index),
+      );
 
-    for (Offset segment in potentialSnake) {
-      if (barriers.contains(segment)) {
+      for (Offset segment in potentialSnake) {
+        if (barriers.contains(segment)) {
+          isCompletelySafe = false;
+          break;
+        }
+      }
+
+      if (!isCompletelySafe) {
+        continue;
+      }
+
+      Offset rightOfHead = Offset(potentialHeadPos.dx + 1, potentialHeadPos.dy);
+      Offset leftOfHead = Offset(potentialHeadPos.dx - 1, potentialHeadPos.dy);
+      Offset aboveHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy - 1);
+      Offset belowHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy + 1);
+
+      if (barriers.contains(rightOfHead) &&
+          barriers.contains(leftOfHead) &&
+          barriers.contains(aboveHead) &&
+          barriers.contains(belowHead)) {
         isCompletelySafe = false;
-        break;
+      }
+
+      if (isCompletelySafe) {
+        if (!barriers.contains(rightOfHead)) {
+          _direction = 'right';
+          _nextDirection = 'right';
+        } else if (!barriers.contains(leftOfHead)) {
+          _direction = 'left';
+          _nextDirection = 'left';
+        } else if (!barriers.contains(belowHead)) {
+          _direction = 'down';
+          _nextDirection = 'down';
+        } else {
+          _direction = 'up';
+          _nextDirection = 'up';
+        }
+        return potentialHeadPos;
       }
     }
 
-    if (!isCompletelySafe) {
-      continue; 
-    }
-
-    Offset rightOfHead = Offset(potentialHeadPos.dx + 1, potentialHeadPos.dy);
-    Offset leftOfHead = Offset(potentialHeadPos.dx - 1, potentialHeadPos.dy);
-    Offset aboveHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy - 1);
-    Offset belowHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy + 1);
-
-    if (barriers.contains(rightOfHead) &&
-        barriers.contains(leftOfHead) &&
-        barriers.contains(aboveHead) &&
-        barriers.contains(belowHead)) {
-      isCompletelySafe = false;
-    }
-
-    if (isCompletelySafe) {
-      if (!barriers.contains(rightOfHead)) {
-        _direction = 'right';
-        _nextDirection = 'right';
-      } else if (!barriers.contains(leftOfHead)) {
-        _direction = 'left';
-        _nextDirection = 'left';
-      } else if (!barriers.contains(belowHead)) {
-        _direction = 'down';
-        _nextDirection = 'down';
-      } else {
-        _direction = 'up';
-        _nextDirection = 'up';
-      }
-      return potentialHeadPos;
-    }
+    // في أسوأ الحالات، نعود لمكان آمن معروف ومضمون
+    return const Offset(10, 10);
   }
-
-  // في أسوأ الحالات، نعود لمكان آمن معروف ومضمون
-  return const Offset(10, 10);
-}
 
   List<Offset> _getCornerClustersPattern() {
     List<Offset> barriers = [];
