@@ -305,7 +305,7 @@ class GameViewModel extends ChangeNotifier {
 
   Future<void> saveNextLevel() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('userLevel', currentLevelIndex + 2);
+    await prefs.setInt('userLevel', currentLevelIndex + 1);
   }
 
   void _gameOver() {
