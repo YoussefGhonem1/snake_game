@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../model/snake_design.dart';
 
@@ -6,7 +5,7 @@ class SnakeDesignsData {
   static final List<SnakeDesign> snakeDesigns = [
     SnakeDesign(
       //0
-      name: 'classic_snake'.tr(),
+      name: 'classic_snake',
       headColor: Color(0xFF58A6FF),
       bodyColor: Color(0xFF1F6FEB),
       price: 0,
@@ -30,7 +29,7 @@ class SnakeDesignsData {
 
     SnakeDesign(
       //1
-      name: 'terrok'.tr(),
+      name: 'terrok',
       headColor: Color(0xFF4ECDC4),
       bodyColor: Color(0xFF44A08D),
       price: 100,
@@ -52,7 +51,7 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //2
-      name: 'verdantis'.tr(),
+      name: 'verdantis',
       headColor: Color.fromARGB(255, 136, 132, 131),
       bodyColor: Color.fromARGB(255, 161, 160, 160),
       price: 5000,
@@ -74,7 +73,7 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //3
-      name: 'venomflare'.tr(),
+      name: 'venomflare',
       headColor: Color(0xFFFFD700),
       bodyColor: Color(0xFFDAA520),
       price: 20000,
@@ -96,7 +95,7 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //4
-      name: 'ignis_fang'.tr(),
+      name: 'ignis_fang',
       headColor: Color(0xFF00FF41),
       bodyColor: Color(0xFF00CC33),
       price: 50000,
@@ -118,7 +117,7 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //5
-      name: 'glacira'.tr(),
+      name: 'glacira',
       headColor: Color(0xFF6A0572),
       bodyColor: Color(0xFFAB83A1),
       price: 80000,
@@ -141,7 +140,7 @@ class SnakeDesignsData {
 
     SnakeDesign(
       //6
-      name: 'aetherion'.tr(),
+      name: 'aetherion',
       headColor: Color(0xFF6A0572),
       bodyColor: Color(0xFFAB83A1),
       price: 100000,
@@ -163,7 +162,7 @@ class SnakeDesignsData {
     ),
     SnakeDesign(
       //7
-      name: 'lumora'.tr(),
+      name: 'lumora',
       headColor: Color(0xFF6A0572),
       bodyColor: Color(0xFFAB83A1),
       price: 170000,
