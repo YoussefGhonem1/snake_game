@@ -58,9 +58,19 @@ class SnakeCard extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (isLocked)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 130),
+                    child: Icon(
+                      Icons.lock,
+                      color: ColorHelper.instance.appErrorColor,
+                      size: 24,
+                    ),
+                  ),
+
                 _buildSnakePreview(),
                 const SizedBox(height: 12),
-                _buildSnakeName(),
+                _buildSnakeName(context),
                 const SizedBox(height: 8),
                 if (!snake.isDefault) _buildRequirements(),
                 const SizedBox(height: 12),
@@ -78,65 +88,15 @@ class SnakeCard extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
         image: DecorationImage(
-          image: AssetImage(snake.imgPaths[0]),
+          image: AssetImage(snake.imgPaths[10]),
           fit: BoxFit.fitHeight,
         ),
-        shape: BoxShape.circle,
-        // gradient: LinearGradient(
-        //   colors: [snake.headColor, snake.bodyColor],
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        // ),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: snake.headColor.withOpacity(0.3),
-        //     blurRadius: 10,
-        //     spreadRadius: 2,
-        //   ),
-        // ],
       ),
       child: Stack(
         children: [
-          // Snake body segments
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: snake.headColor,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 30,
-            left: 30,
-            child: Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: snake.bodyColor,
-              ),
-            ),
-          ),
-          if (isLocked)
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.7),
-              ),
-              child: Icon(
-                Icons.lock,
-                color: ColorHelper.instance.appErrorColor,
-                size: 30,
-              ),
-            ),
           if (isSelected && isOwned)
             Container(
               width: 80,
@@ -156,9 +116,9 @@ class SnakeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSnakeName() {
+  Widget _buildSnakeName(BuildContext context) {
     return Text(
-      snake.name,
+      context.tr(snake.name),
       style: TextStyle(
         color: ColorHelper.instance.onSecondary,
         fontSize: 16,
@@ -175,7 +135,7 @@ class SnakeCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.monetization_on,
+              Icons.circle,
               color: ColorHelper.instance.scoreColor,
               size: 16,
             ),

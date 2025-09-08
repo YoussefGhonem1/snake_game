@@ -35,8 +35,8 @@ class UserStatsHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem(
-            Icons.monetization_on,
-            context.tr('Points'),
+            Icons.circle,
+            context.tr('points'),
             userCoins.toString(),
             ColorHelper.instance.scoreColor,
           ),

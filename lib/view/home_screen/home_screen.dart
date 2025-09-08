@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
 
-                      // Bottom section with settings
+                      //Bottom section with settings
                       Expanded(
                         flex: 2,
                         child: Column(
@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
               // SNakes Store button
               _buildMainButton(
-                title: context.tr('snakes_store').toUpperCase(),
+                title: context.tr('snake_store').toUpperCase(),
                 subtitle: context.tr('buy_snakes_and_customize'),
                 icon: Icons.store,
                 gradient: LinearGradient(
