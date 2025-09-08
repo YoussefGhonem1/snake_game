@@ -6,7 +6,6 @@ import 'package:snake_game/view/home_screen/splash_screen.dart';
 import 'package:snake_game/view/settings/language_settings.dart';
 import 'package:snake_game/view/settings/privacy_policy/privacy_policy.dart';
 import 'package:snake_game/view/snakes_store/snakes_store_screen.dart';
-import 'package:snake_game/view/splash/splashhh_screen.dart';
 import '../../view/game/game_screen.dart';
 import '../../view/home_screen/home_screen.dart';
 

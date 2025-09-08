@@ -112,8 +112,8 @@ class GameViewModel extends ChangeNotifier {
     BuildContext context,
     GamePadding gamePaddings, {
     int? startLevelIndex,
-    int? customRows, 
-    int? customColumns, 
+    int? customRows,
+    int? customColumns,
   }) {
     isGameInitialized = false;
     notifyListeners();
@@ -318,7 +318,7 @@ class GameViewModel extends ChangeNotifier {
 
   Future<void> saveNextLevel() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('userLevel', currentLevelIndex + 1);
+    await prefs.setInt('userLevel', currentLevelIndex + 2);
   }
 
   void _gameOver() {
