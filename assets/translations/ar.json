@@ -100,8 +100,7 @@
   "accept_privacy_policy": "من خلال التسجيل، فإنك توافق على",
   "open_game_levels": "مستويات اللعبة المفتوحة",
   "Choose Level - Free Mode": "اختر المستوى - الوضع الحر",
-  "Snake Store": "متجر الثعبان",
-  "Buy Snakes and Customize": "اشتر الثعبان واعدله",
+  "buy_snakes_and_customize": "اشتر الثعبان واعدله",
   "Insufficient Resources": "الموارد غير كافية",
   "Purchase Successful": "تم الشراء بنجاح",
   "You have successfully purchased and equipped": "تم الشراء والتعديل بنجاح",
@@ -118,5 +117,16 @@
   "default": "افتراضي",
   "selected": "مختار",
   "select": "اختيار",
-  "buy": "شراء"
+  "buy": "شراء",
+  "classic_snake": "الثعبان التقليدي",
+  "terrok": "ظِلّ التُراب",
+  "verdantis": "سهم الغاب",
+  "venomflare": "لهيب السم",
+  "ignis_fang": "ناب النار",
+  "glacira": "روح الجليد",
+  "aetherion": "ظل السماوات",
+  "lumora": "المتوهج",
+  "snake_store": "متجر الثعابين",
+  "points": "النقاط",
+  "locked": "مقفول"
 }

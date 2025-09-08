@@ -4,9 +4,11 @@ class SnakeDesign {
   final String name;
   final Color headColor;
   final Color bodyColor;
+  final List<String> imgPaths;
   final int price;
   final int requiredLevel;
   final bool isDefault;
+  final BoxFit fit;
 
   SnakeDesign({
     required this.name,
@@ -14,6 +16,8 @@ class SnakeDesign {
     required this.bodyColor,
     required this.price,
     required this.requiredLevel,
+    required this.imgPaths,
     this.isDefault = false,
+    required this.fit,
   });
 }

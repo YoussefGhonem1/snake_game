@@ -101,7 +101,7 @@
   "open_game_levels": "Open Game Levels",
   "Choose Level - Free Mode": "Choose Level - Free Mode",
   "Snake Store": "Snake Store",
-  "Buy Snakes and Customize": "Buy Snakes and Customize",
+  "buy_snakes_and_customize": "Buy Snakes and Customize",
   "Insufficient Resources": "Insufficient Resources",
   "Purchase Successful": "Purchase Successful",
   "You have successfully purchased and equipped": "You have successfully purchased and equipped",
@@ -118,5 +118,16 @@
   "default": "default",
   "selected": "selected",
   "select": "select",
-  "buy": "buy"
+  "buy": "buy",
+  "classic_snake": "classic_snake",
+  "terrok": "Terrok",
+  "verdantis": "Verdantis",
+  "venomflare": "Venomflare",
+  "ignis_fang": "Ignis Fang",
+  "glacira": "Glacira",
+  "aetherion": "Aetherion",
+  "lumora": "Lumora",
+  "snake_store": "Snake Store",
+  "points": "Points",
+  "locked": "Locked"
 }

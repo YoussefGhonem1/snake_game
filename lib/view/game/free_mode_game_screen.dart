@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/view/game/free_mode_game_board.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +14,19 @@ class FreeModeGameScreen extends StatefulWidget {
   State<FreeModeGameScreen> createState() => _FreeModeGameScreenState();
 }
 
+int selectedSnakeIndex = 0;
+
 class _FreeModeGameScreenState extends State<FreeModeGameScreen> {
   @override
   void initState() {
     super.initState();
     // Hide system UI bars for immersive gaming experience
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    _loadSelectedSnakeIndex().then((index) {
+      setState(() {
+        selectedSnakeIndex = index;
+      });
+    });
   }
 
   @override
@@ -26,6 +34,11 @@ class _FreeModeGameScreenState extends State<FreeModeGameScreen> {
     // Restore system UI bars when leaving the game
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
+  }
+
+  Future<int> _loadSelectedSnakeIndex() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('selectedSnakeIndex') ?? 0;
   }
 
   @override
@@ -62,6 +75,7 @@ class _FreeModeGameScreenState extends State<FreeModeGameScreen> {
                         height: height * 0.65, // Reduced for better centering
                         width: width * 0.95, // Slight margin on sides
                         startIndex: widget.startLevelIndex,
+                        selectedSnakeIndex: selectedSnakeIndex,
                       ),
                     ),
                   ),

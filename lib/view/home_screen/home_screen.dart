@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/core/constants/game_colors.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
+import 'package:snake_game/core/constants/strings.dart';
 import 'package:snake_game/core/helpers/navigate_helper.dart';
 import 'package:snake_game/core/helpers/language_helper.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
@@ -99,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final maxFreeModeScore =
           await FreeModeGameViewModel.getMaxFreeModeScore();
       gScore = maxFreeModeScore.toString().padLeft(6, '0');
-
+      SharedPreferences _sharedPreferences;
+      _sharedPreferences = await SharedPreferences.getInstance();
+      _sharedPreferences.setInt(AppStrings.userCoins, int.tryParse(gScore)!);
       setState(() {
         screenLoading = false;
       });
@@ -146,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     children: [
                       // Top section with logo and title
                       Expanded(
-                        flex: 3,
+                        flex: 2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [_buildLogo()],
@@ -157,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Expanded(
                         flex: 4,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             // Score display
@@ -168,17 +173,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
 
-                      // Bottom section with settings
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildBottomActions(),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
+                      //Bottom section with settings
+                      // Expanded(
+                      //   flex: 2,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      _buildBottomActions(),
+                      //       const SizedBox(height: 20),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -236,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               // Game Title
               Text(
                 context.tr('snake_game'),
@@ -339,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 },
               ),
 
-              const SizedBox(height: 20),
+              //const SizedBox(height: 20),
 
               // Free Mode button
               _buildMainButton(
@@ -357,14 +362,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
               // SNakes Store button
               _buildMainButton(
-                title: context.tr('snakes_store').toUpperCase(),
+                title: context.tr('snake_store').toUpperCase(),
                 subtitle: context.tr('buy_snakes_and_customize'),
                 icon: Icons.store,
                 gradient: LinearGradient(
                   colors: [colorHelper.primary, colorHelper.levelProgressColor],
                 ),
+
                 onTap: () {
-                  navigateTo(context, RoutePath.snakeGameScreen);
+                  Navigator.pushNamed(context, RoutePath.snakeGameScreen).then((
+                    updated,
+                  ) {
+                    if (updated == true) {
+                      getCurrentScore();
+                    }
+                  });
                 },
               ),
             ],
