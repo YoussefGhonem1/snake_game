@@ -53,8 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: colorHelper
-          .appSecondBackgroundColor, // Match your splash screen background
+      backgroundColor: colorHelper.appSecondBackgroundColor,
       body: Center(
         child: Stack(
           children: [
@@ -73,30 +72,10 @@ class _SplashScreenState extends State<SplashScreen>
                   ..forward();
               },
             ),
-            // Positioned(
-            //   left: width * 0.335,
-            //   top: height * 0.16,
-            //   child: AnimatedBuilder(
-            //     animation: _animationController,
-            //     builder: (context, child) {
-            //       return Opacity(
-            //         opacity: _animationController.value,
-            //         child: Transform.scale(
-            //           scale: _scaleAnimation.value,
-            //           child: child,
-            //         ),
-            //       );
-            //     },
-            //     child: Container(
-            //       width: 300,
-            //       height: 300,
-            //       child: Image.asset("assets/images/logo.png"),
-            //     ),
-            //   ),
-            // ),
+
             Positioned(
               left: width * 0.335,
-              top: height * 0.16,
+              top: height * 0.10,
               child: AnimatedBuilder(
                 animation: _animationController,
                 builder: (context, child) {
@@ -117,8 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 150,
                       child: Image.asset("assets/images/logo.png"),
                     ),
-                    const SizedBox(height: 20),
-                    // النص
+                    const SizedBox(height: 60),
                     const Text(
                       "Snake Game",
                       style: TextStyle(

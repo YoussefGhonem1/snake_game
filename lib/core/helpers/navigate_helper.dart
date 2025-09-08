@@ -31,7 +31,7 @@ class NavigatorHelper {
       case RoutePath.languageScreen:
         return MaterialPageRoute(builder: (_) => const LanguageSettings());
       case RoutePath.splashScreen:
-        return MaterialPageRoute(builder: (_) => const SplashhhScreen());
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case RoutePath.privacyPolicyScreen:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
       case RoutePath.snakeGameScreen:

@@ -233,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Center(
                 child: Image.asset(
                   'assets/images/logo.png',
-                  width: 200,
-                  height: 200,
+                  width: 150,
+                  height: 150,
                   fit: BoxFit.contain,
                   //scolor: Colors.white,
                   colorBlendMode: BlendMode.srcIn,
