@@ -34,8 +34,6 @@ class _GameScreenState extends State<GameScreen> {
     // Restore system UI bars when leaving the game
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     
-    // ** تعديل مهم: تحديث البيانات عند الخروج من شاشة اللعب **
-    // هذا يضمن أن شاشة اختيار المستويات ستعرض أحدث تقدم
     Provider.of<GameViewModel>(context, listen: false).loadGameProgress();
     
     super.dispose();
@@ -51,8 +49,6 @@ class _GameScreenState extends State<GameScreen> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    // ** تم حذف ChangeNotifierProvider من هنا **
-    // الآن هذه الشاشة تستخدم نفس نسخة GameViewModel مع باقي التطبيق
 
     return Scaffold(
       body: Container(
