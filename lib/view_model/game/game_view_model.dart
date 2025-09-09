@@ -307,14 +307,14 @@ class GameViewModel extends ChangeNotifier {
     if (!_isPlaying) return;
     _timer?.cancel();
     _isPlaying = false;
-    saveNextLevel();
+    // saveNextLevel();
     saveGameProgress().then((_) {
       _playLevelCompleteSound();
       AdMobHelper.showInterstitialAd();
       onGameCompleted();
       //   notifyListeners();
     });
-    saveNextLevel();
+    // saveNextLevel();
   }
 
   Future<void> saveNextLevel() async {
@@ -628,6 +628,7 @@ class GameViewModel extends ChangeNotifier {
           currentLevelIndex + 2 > maxUnlockedLevel) {
         maxUnlockedLevel = (currentLevelIndex + 2).clamp(1, maxLevels + 1);
         await prefs.setInt('maxUnlockedLevel', maxUnlockedLevel);
+        notifyListeners();
       }
     }
   }

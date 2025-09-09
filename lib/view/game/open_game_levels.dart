@@ -5,7 +5,6 @@ import 'package:snake_game/core/helpers/navigate_helper.dart';
 import 'package:snake_game/view_model/game/free_mode_game_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/route_manager.dart';
-import '../../model/model/level.dart';
 import '../../view_model/game/game_view_model.dart';
 import '../../view/game/free_mode_game_screen.dart';
 
@@ -18,7 +17,6 @@ class OpenGameLevels extends StatefulWidget {
 class _OpenGameLevelsState extends State<OpenGameLevels> {
   ColorHelper colorHelper = ColorHelper.instance;
   late GameViewModel gameScreenViewModel;
-  List<GameLevel> _gameLevels = [];
   bool _isFreeMode = false; // Default to level mode
 
   @override
@@ -99,20 +97,25 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
 
               // Modern grid with improved spacing
               Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 20,
-                  ),
-                 itemCount: _isFreeMode ? 1 : gameScreenViewModel.maxLevels,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 1.0,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemBuilder: (context, index) {
-                    return getLevelWidget(context, index);
+                child: Consumer<GameViewModel>(
+                  builder: (context, gameViewModel, child) {
+                    return GridView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 20,
+                      ),
+                      itemCount: _isFreeMode ? 1 : gameViewModel.maxLevels,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.0,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        return getLevelWidget(context, index, gameViewModel);
+                      },
+                    );
                   },
                 ),
               ),
@@ -123,16 +126,14 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
     );
   }
 
-  getLevelWidget(BuildContext context, int index) {
-    // Use the new enhanced score system for level unlocking
-    bool isLevelUnlocked = index < gameScreenViewModel.maxUnlockedLevel;
-    //bool isLevelUnlocked =true;
+  Widget getLevelWidget(
+      BuildContext context, int index, GameViewModel gameViewModel) {
+    bool isLevelUnlocked = index < gameViewModel.maxUnlockedLevel;
 
-    // In free mode, show all unlocked levels; in level mode, use traditional progression
-    if (!isLevelUnlocked && (_isFreeMode || index > 0)) {
+    if (!isLevelUnlocked && !_isFreeMode) {
       return InkWell(
         onTap: () {
-          lockedLevelMessage(context, index);
+          lockedLevelMessage(context, index, gameViewModel);
         },
         child: Stack(
           children: [
@@ -172,9 +173,9 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 14),
+                  const SizedBox(height: 14),
                   Text(
-                    "${context.tr('score')}: ${gameScreenViewModel.gameLevels[index].maxScore}",
+                    "${context.tr('score')}: ${gameViewModel.gameLevels[index].maxScore}",
                     style: TextStyle(
                       color: colorHelper.appOnButtonSecondColor.withOpacity(
                         0.8,
@@ -209,10 +210,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
 
     return InkWell(
       onTap: () async {
-        print("Selected level: ${index + 1}, Free Mode: $_isFreeMode");
-
         if (_isFreeMode) {
-          // Navigate directly to the new FreeModeGameScreen
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -220,13 +218,10 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
             ),
           );
         } else {
-          // Set the game mode for level mode
-          gameScreenViewModel.setGameMode(
+          gameViewModel.setGameMode(
             GameMode.levelMode,
             selectedLevel: index,
           );
-
-          // Navigate directly to the enhanced game screen (ads removed)
           navigateTo(
             context,
             RoutePath.gameScreen,
@@ -276,7 +271,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                         ),
                       ),
                       if (highScore > 0) ...[
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           "${context.tr('best')}: $highScore",
                           style: TextStyle(
@@ -287,7 +282,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                           ),
                         ),
                       ] else ...[
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           "${context.tr('best')}: 0",
                           style: TextStyle(
@@ -303,69 +298,65 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                 },
               )
             : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${index + 1}",
-                        style: TextStyle(
-                          color: colorHelper.appOnButtonSecondColor,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                  
-                        SizedBox(height: 4),
-                        Text(
-                           "${context.tr('score')}: ${gameScreenViewModel.gameLevels[index].maxScore}",
-                          style: TextStyle(
-                            color: colorHelper.appOnButtonSecondColor
-                                .withOpacity(0.8),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      
-                    ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "${index + 1}",
+                    style: TextStyle(
+                      color: colorHelper.appOnButtonSecondColor,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${context.tr('score')}: ${gameViewModel.gameLevels[index].maxScore}",
+                    style: TextStyle(
+                      color:
+                          colorHelper.appOnButtonSecondColor.withOpacity(0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
 
-  lockedLevelMessage(BuildContext gameContext, int index) async {
+  void lockedLevelMessage(
+      BuildContext gameContext, int index, GameViewModel gameViewModel) async {
     showDialog(
       barrierDismissible: false,
       context: gameContext,
-      builder: (_) => Container(
-        color: colorHelper.appBackgroundColor,
-        child: AlertDialog(
-          backgroundColor: colorHelper.alertDialogBackgroundColor,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'your_score'.tr(args: [gameScreenViewModel.score]),
-                style: TextStyle(color: colorHelper.alertTextColor),
-              ),
-              Text(
-                'level_locked_at_least'.tr(
-                  args: [gameScreenViewModel.gameLevels[index].maxScore.toString()],
-                ),
-                style: TextStyle(color: colorHelper.alertTextColor),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(gameContext).pop();
-              },
-              child: Text(
-                'ok'.tr(),
-                style: TextStyle(color: colorHelper.alertTextColor),
-              ),
+      builder: (_) => AlertDialog(
+        backgroundColor: colorHelper.alertDialogBackgroundColor,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'your_score'.tr(args: [gameViewModel.score]),
+              style: TextStyle(color: colorHelper.alertTextColor),
+            ),
+            Text(
+              'level_locked_at_least'
+                  .tr(args: [gameViewModel.gameLevels[index].maxScore.toString()]),
+              style: TextStyle(color: colorHelper.alertTextColor),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(gameContext).pop();
+            },
+            child: Text(
+              'ok'.tr(),
+              style: TextStyle(color: colorHelper.alertTextColor),
+            ),
+          ),
+        ],
       ),
     );
   }

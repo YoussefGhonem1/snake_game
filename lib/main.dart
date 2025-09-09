@@ -23,15 +23,13 @@ void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     EasyLocalization.ensureInitialized();
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.clear();
+     final prefs = await SharedPreferences.getInstance();
+     await prefs.clear();
 
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-
       await MobileAds.instance.initialize();
-      
        AdMobHelper.loadInterstitialAd();
     
     await GameHelper.instance.initGameHelper();
