@@ -1072,7 +1072,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
                             Icons.exit_to_app,
                             () {
                               Navigator.of(context).pop();
-                              Navigator.of(context).pop(); // Exit game screen
+                              Navigator.pop(context, true);
                             },
                           ),
                         ],

@@ -681,21 +681,20 @@ class _GameBoardState extends State<GameBoard>
   ) {
     // Straight segments keep alternating images for wavy effect
     if (segmentType == 'horizontal') {
-      return (gameViewModel.movementCounter + index) % 2 == 0
+      return (provider.movementCounter + index) % 2 == 0
           ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[2]
           : SnakeDesignsData
                 .snakeDesigns[widget.selectedSnakeIndex]
                 .imgPaths[3];
     }
     if (segmentType == 'vertical') {
-      return (gameViewModel.movementCounter + index) % 2 == 0
+      return (provider.movementCounter + index) % 2 == 0
           ? SnakeDesignsData.snakeDesigns[widget.selectedSnakeIndex].imgPaths[4]
           : SnakeDesignsData
                 .snakeDesigns[widget.selectedSnakeIndex]
                 .imgPaths[5];
     }
 
-    // Corners: use orientation-specific connector images based on turn direction
     if (index > 0 && index < provider.snake.length - 1) {
       Offset prevSegment = provider.snake[index - 1];
       Offset nextSegment = provider.snake[index + 1];
@@ -705,33 +704,43 @@ class _GameBoardState extends State<GameBoard>
       double nextDx = nextSegment.dx - segment.dx;
       double nextDy = nextSegment.dy - segment.dy;
 
-      // Updated mapping with new clearer image names
-      // right2down: bottom-right corner (coming from left/up, going to right/down)
-      if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0))
+      if (prevDx == 0 && prevDy == 0) return null;
+      if (nextDx == 0 && nextDy == 0) return null;
+
+      if (prevDx.abs() > 1) prevDx = -prevDx.sign;
+      if (prevDy.abs() > 1) prevDy = -prevDy.sign;
+      if (nextDx.abs() > 1) nextDx = -nextDx.sign;
+      if (nextDy.abs() > 1) nextDy = -nextDy.sign;
+
+      // ✅ Corners mapping
+      // right2down: bottom-right corner
+      if ((prevDx < 0 && nextDy > 0) || (prevDy < 0 && nextDx > 0)) {
         return SnakeDesignsData
             .snakeDesigns[widget.selectedSnakeIndex]
             .imgPaths[6];
+      }
 
-      // left2down: bottom-left corner (coming from right/up, going to left/down)
-      if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0))
+      // left2down: bottom-left corner
+      if ((prevDx > 0 && nextDy > 0) || (prevDy < 0 && nextDx < 0)) {
         return SnakeDesignsData
             .snakeDesigns[widget.selectedSnakeIndex]
             .imgPaths[7];
+      }
 
-      // right2up: top-right corner (coming from left/down, going to right/up)
-      if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0))
+      // right2up: top-right corner
+      if ((prevDx < 0 && nextDy < 0) || (prevDy > 0 && nextDx > 0)) {
         return SnakeDesignsData
             .snakeDesigns[widget.selectedSnakeIndex]
             .imgPaths[8];
+      }
 
-      // left2up: top-left corner (coming from right/down, going to left/up)
-      if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0))
+      // left2up: top-left corner
+      if ((prevDx > 0 && nextDy < 0) || (prevDy > 0 && nextDx < 0)) {
         return SnakeDesignsData
             .snakeDesigns[widget.selectedSnakeIndex]
             .imgPaths[9];
+      }
     }
-
-    // Fallback
     return null;
   }
 
