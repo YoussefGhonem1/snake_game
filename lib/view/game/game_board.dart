@@ -70,42 +70,34 @@ class _GameBoardState extends State<GameBoard>
       CurvedAnimation(parent: _scoreController, curve: Curves.elasticOut),
     );
 
-    // --- بداية الكود المُعدل ---
 
-    // حساب الأبعاد المثالية للشبكة لتناسب الشاشة
-    double topBarHeight = 120.0; // ارتفاع تقريبي للشريط العلوي مع بعض الهوامش
-    double bottomPadding = 20.0; // هامش بسيط في الأسفل
+    double topBarHeight = 120.0;
+    double bottomPadding = 20.0;
 
-    double availableWidth = widget.width - 20; // هامش أفقي بسيط
+    double availableWidth = widget.width - 20; 
     double availableHeight = widget.height - topBarHeight - bottomPadding;
 
-    // سنبقي عدد الأعمدة ثابتًا ونحسب حجم الخلية بناءً على العرض
     int columns = 20;
     double cellSize = (availableWidth / columns).floorToDouble();
 
-    // الآن، نحسب عدد الصفوف التي يمكن أن تتناسب مع الارتفاع المتاح
     int rows = (availableHeight / cellSize).floor();
 
-    // التأكد من أن حجم الخلية ضمن حدود معقولة
     if (cellSize < 15.0) cellSize = 15.0;
     if (cellSize > 30.0) cellSize = 30.0;
 
-    // إعادة حساب أبعاد الشبكة النهائية باستخدام حجم الخلية النهائي
     double gridWidth = cellSize * columns;
     double gridHeight = cellSize * rows;
 
-    // توسيط الشبكة أفقيًا
     double leftPadding = (widget.width - gridWidth) / 2;
 
     GamePadding gamePaddings = GamePadding(
       left: leftPadding,
       right: leftPadding,
-      top: topBarHeight, // ترك مساحة للشريط العلوي
+      top: topBarHeight,
       height: gridHeight,
       width: widget.width,
     );
 
-    // --- نهاية الكود المُعدل ---
 
     gameViewModel = Provider.of<GameViewModel>(context, listen: false);
     gameViewModel.bigScoreAnimationController = AnimationController(
@@ -117,8 +109,6 @@ class _GameBoardState extends State<GameBoard>
       duration: const Duration(seconds: 2),
     );
 
-    // تم إضافة customRows و customColumns هنا
-    // تأكد من تعديل دالة initializeGame لتقبل هذه المتغيرات
     gameViewModel.initializeGame(
       context,
       gamePaddings,
