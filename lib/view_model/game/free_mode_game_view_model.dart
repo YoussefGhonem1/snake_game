@@ -8,7 +8,7 @@ import 'package:snake_game/model/model/level.dart';
 import '../../model/model/game_padding.dart';
 
 class FreeModeGameViewModel extends ChangeNotifier {
-  int _rows = 20;
+  int _rows = 30;
   int _columns = 20;
   double _cellSize = 20.0;
 
@@ -66,7 +66,7 @@ class FreeModeGameViewModel extends ChangeNotifier {
 
     double cellWidth = availableSize.width / _columns;
     double cellHeight = availableSize.height / _rows;
-    _cellSize = min(cellWidth, cellHeight).floorToDouble();
+    _cellSize = min(cellWidth, cellHeight);
   }
 
   void initializeGame(
@@ -85,7 +85,7 @@ class FreeModeGameViewModel extends ChangeNotifier {
           (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
           _columns;
       double cellHeight = gamePaddings.height / _rows;
-      _cellSize = min(cellWidth, cellHeight).floorToDouble();
+      _cellSize = min(cellWidth, cellHeight);
     } else {
       _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
     }

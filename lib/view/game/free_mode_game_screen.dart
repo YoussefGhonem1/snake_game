@@ -72,7 +72,7 @@ class _FreeModeGameScreenState extends State<FreeModeGameScreen> {
                     child: Directionality(
                       textDirection: TextDirection.ltr,
                       child: FreeModeGameBoard(
-                        height: height * 0.8, // Reduced for better centering
+                        height: height * 0.78, // Reduced for better centering
                         width: width * 0.95, // Slight margin on sides
                         startIndex: widget.startLevelIndex,
                         selectedSnakeIndex: selectedSnakeIndex,
