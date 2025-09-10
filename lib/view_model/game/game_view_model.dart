@@ -100,7 +100,7 @@ class GameViewModel extends ChangeNotifier {
 
     double cellWidth = availableSize.width / _columns;
     double cellHeight = availableSize.height / _rows;
-    _cellSize = min(cellWidth, cellHeight).floorToDouble();
+    _cellSize = min(cellWidth, cellHeight);
   }
 
   void _initializeLevelsData() {
@@ -109,13 +109,15 @@ class GameViewModel extends ChangeNotifier {
     maxLevels = gameLevels.length;
   }
 
-  void initializeGame(
-    BuildContext context,
-    GamePadding gamePaddings, {
-    int? startLevelIndex,
-    int? customRows,
-    int? customColumns,
-  }) {
+
+void initializeGame(
+  BuildContext context,
+  GamePadding gamePaddings, {
+  int? startLevelIndex,
+  int? customRows,
+  int? customColumns,
+}) {
+  Future.microtask(() {
     isGameInitialized = false;
     notifyListeners();
 
@@ -128,7 +130,7 @@ class GameViewModel extends ChangeNotifier {
           (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
           _columns;
       double cellHeight = gamePaddings.height / _rows;
-      _cellSize = min(cellWidth, cellHeight).floorToDouble();
+      _cellSize = min(cellWidth, cellHeight);
     } else {
       _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
     }
@@ -142,7 +144,8 @@ class GameViewModel extends ChangeNotifier {
 
     isGameInitialized = true;
     notifyListeners();
-  }
+  });
+}
 
   void _initializeLevel() {
     if (currentLevelIndex >= gameLevels.length) {

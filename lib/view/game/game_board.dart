@@ -70,11 +70,10 @@ class _GameBoardState extends State<GameBoard>
       CurvedAnimation(parent: _scoreController, curve: Curves.elasticOut),
     );
 
-
     double topBarHeight = 120.0;
     double bottomPadding = 20.0;
 
-    double availableWidth = widget.width - 20; 
+    double availableWidth = widget.width - 20;
     double availableHeight = widget.height - topBarHeight - bottomPadding;
 
     int columns = 20;
@@ -97,7 +96,6 @@ class _GameBoardState extends State<GameBoard>
       height: gridHeight,
       width: widget.width,
     );
-
 
     gameViewModel = Provider.of<GameViewModel>(context, listen: false);
     gameViewModel.bigScoreAnimationController = AnimationController(
@@ -182,7 +180,7 @@ class _GameBoardState extends State<GameBoard>
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           gradient: ColorHelper.instance.gameBackgroundGradient,
           borderRadius: BorderRadius.circular(20),
@@ -255,7 +253,7 @@ class _GameBoardState extends State<GameBoard>
     VoidCallback onPressed,
   ) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.33,
+      width: MediaQuery.of(context).size.width * 0.34,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, color: ColorHelper.instance.onPrimary),
@@ -268,7 +266,6 @@ class _GameBoardState extends State<GameBoard>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         ),
       ),
     );
@@ -1034,7 +1031,7 @@ class _GameBoardState extends State<GameBoard>
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -1102,7 +1099,7 @@ class _GameBoardState extends State<GameBoard>
             ),
             const SizedBox(height: 30),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildDialogButton('Play Again', Icons.refresh, () {
                   Navigator.of(context).pop();

@@ -107,11 +107,11 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                       itemCount: _isFreeMode ? 1 : gameViewModel.maxLevels,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 1.0,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
+                            crossAxisCount: 3,
+                            childAspectRatio: 1.0,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
                       itemBuilder: (context, index) {
                         return getLevelWidget(context, index, gameViewModel);
                       },
@@ -127,7 +127,10 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
   }
 
   Widget getLevelWidget(
-      BuildContext context, int index, GameViewModel gameViewModel) {
+    BuildContext context,
+    int index,
+    GameViewModel gameViewModel,
+  ) {
     bool isLevelUnlocked = index < gameViewModel.maxUnlockedLevel;
 
     if (!isLevelUnlocked && !_isFreeMode) {
@@ -218,10 +221,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
             ),
           );
         } else {
-          gameViewModel.setGameMode(
-            GameMode.levelMode,
-            selectedLevel: index,
-          );
+          gameViewModel.setGameMode(GameMode.levelMode, selectedLevel: index);
           navigateTo(
             context,
             RoutePath.gameScreen,
@@ -312,8 +312,9 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                   Text(
                     "${context.tr('score')}: ${gameViewModel.gameLevels[index].maxScore}",
                     style: TextStyle(
-                      color:
-                          colorHelper.appOnButtonSecondColor.withOpacity(0.8),
+                      color: colorHelper.appOnButtonSecondColor.withOpacity(
+                        0.8,
+                      ),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -325,7 +326,10 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
   }
 
   void lockedLevelMessage(
-      BuildContext gameContext, int index, GameViewModel gameViewModel) async {
+    BuildContext gameContext,
+    int index,
+    GameViewModel gameViewModel,
+  ) async {
     showDialog(
       barrierDismissible: false,
       context: gameContext,
@@ -339,8 +343,9 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
               style: TextStyle(color: colorHelper.alertTextColor),
             ),
             Text(
-              'level_locked_at_least'
-                  .tr(args: [gameViewModel.gameLevels[index].maxScore.toString()]),
+              'level_locked_at_least'.tr(
+                args: [gameViewModel.gameLevels[index].maxScore.toString()],
+              ),
               style: TextStyle(color: colorHelper.alertTextColor),
               textAlign: TextAlign.center,
             ),
