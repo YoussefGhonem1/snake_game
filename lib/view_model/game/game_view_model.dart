@@ -18,7 +18,7 @@ class GameViewModel extends ChangeNotifier {
     loadGameProgress();
     _initializeLevelsData();
   }
-  int _rows = 30;
+  int _rows = 31;
   int _columns = 20;
   double _cellSize = 20.0;
 
@@ -363,70 +363,25 @@ void initializeGame(
         _food == _bigScoreCell);
   }
 
-  Offset _findSafeStartingPosition(
-    List<Offset> barriers,
-    int initialSnakeLength,
-  ) {
-    List<Offset> allPossiblePositions = [];
-    for (int y = initialSnakeLength; y < _rows - 2; y++) {
-      for (int x = 2; x < _columns - 2; x++) {
-        allPossiblePositions.add(Offset(x.toDouble(), y.toDouble()));
-      }
+Offset _findSafeStartingPosition(
+  List<Offset> barriers,
+  int initialSnakeLength,
+) {
+  Offset startHead = const Offset(0, 0);
+
+  for (int i = 0; i < initialSnakeLength; i++) {
+    Offset segment = Offset(startHead.dx - i, startHead.dy); 
+    if (barriers.contains(segment)) {
+      return const Offset(2, 0);
     }
-
-    allPossiblePositions.shuffle(Random());
-
-    for (Offset potentialHeadPos in allPossiblePositions) {
-      bool isCompletelySafe = true;
-
-      List<Offset> potentialSnake = List.generate(
-        initialSnakeLength,
-        (index) => Offset(potentialHeadPos.dx, potentialHeadPos.dy - index),
-      );
-
-      for (Offset segment in potentialSnake) {
-        if (barriers.contains(segment)) {
-          isCompletelySafe = false;
-          break;
-        }
-      }
-
-      if (!isCompletelySafe) {
-        continue;
-      }
-
-      Offset rightOfHead = Offset(potentialHeadPos.dx + 1, potentialHeadPos.dy);
-      Offset leftOfHead = Offset(potentialHeadPos.dx - 1, potentialHeadPos.dy);
-      Offset aboveHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy - 1);
-      Offset belowHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy + 1);
-
-      if (barriers.contains(rightOfHead) &&
-          barriers.contains(leftOfHead) &&
-          barriers.contains(aboveHead) &&
-          barriers.contains(belowHead)) {
-        isCompletelySafe = false;
-      }
-
-      if (isCompletelySafe) {
-        if (!barriers.contains(rightOfHead)) {
-          _direction = 'right';
-          _nextDirection = 'right';
-        } else if (!barriers.contains(leftOfHead)) {
-          _direction = 'left';
-          _nextDirection = 'left';
-        } else if (!barriers.contains(belowHead)) {
-          _direction = 'down';
-          _nextDirection = 'down';
-        } else {
-          _direction = 'up';
-          _nextDirection = 'up';
-        }
-        return potentialHeadPos;
-      }
-    }
-
-    return const Offset(10, 10);
   }
+
+  _direction = 'right';
+  _nextDirection = 'right';
+
+  return startHead;
+}
+
 
   List<Offset> _getCornerClustersPattern() {
     List<Offset> barriers = [];
@@ -490,35 +445,54 @@ void initializeGame(
     return barriers;
   }
 
-  List<Offset> _getCentralBoxPattern() {
-    List<Offset> barriers = [];
-    int leftX = (_columns * 0.25).floor();
-    int rightX = (_columns * 0.75).floor();
-    int topY = (_rows * 0.25).floor();
-    int bottomY = (_rows * 0.75).floor();
+ List<Offset> _getCentralBoxPattern() {
+  List<Offset> barriers = [];
+  int leftX = (_columns * 0.25).floor();
+  int rightX = (_columns * 0.75).floor();
+  int topY = (_rows * 0.25).floor();
+  int bottomY = (_rows * 0.75).floor();
 
-    for (int i = leftX; i <= rightX; i++) {
-      barriers.add(Offset(i.toDouble(), topY.toDouble())); // top
-      barriers.add(Offset(i.toDouble(), bottomY.toDouble())); // bottom
-    }
-    for (int j = topY; j <= bottomY; j++) {
-      barriers.add(Offset(leftX.toDouble(), j.toDouble())); // left
-      barriers.add(Offset(rightX.toDouble(), j.toDouble())); // right
-    }
-    return barriers;
+  // top side
+  for (int i = leftX; i <= rightX; i++) {
+    barriers.add(Offset(i.toDouble(), topY.toDouble()));
   }
 
-  List<Offset> _getDiagonalLinesPattern() {
-    List<Offset> barriers = [];
-    int minDim = min(_rows, _columns);
-    for (int i = 2; i < minDim - 2; i++) {
-      barriers.add(Offset(i.toDouble(), i.toDouble())); // \ main diagonal
-      barriers.add(
-        Offset((_columns - 1 - i).toDouble(), i.toDouble()),
-      ); // / anti-diagonal
-    }
-    return barriers;
+  // bottom side (مفتوحة مش هنرسمها)
+  // for (int i = leftX; i <= rightX; i++) {
+  //   barriers.add(Offset(i.toDouble(), bottomY.toDouble()));
+  // }
+
+  // left side
+  for (int j = topY; j <= bottomY; j++) {
+    barriers.add(Offset(leftX.toDouble(), j.toDouble()));
   }
+
+  // right side
+  for (int j = topY; j <= bottomY; j++) {
+    barriers.add(Offset(rightX.toDouble(), j.toDouble()));
+  }
+
+  return barriers;
+}
+
+List<Offset> _getDiagonalLinesPattern() {
+  List<Offset> barriers = [];
+  if (_rows <= 1 || _columns <= 1) return barriers;
+
+  for (int y = 1; y < _rows-1; y++) {
+    double t = y / (_rows - 1);
+    int xMain = (t * (_columns - 1)).round();
+    int xAnti = (_columns - 1) - xMain;
+
+    barriers.add(Offset(xMain.toDouble(), y.toDouble()));
+    if (xAnti != xMain) {
+      barriers.add(Offset(xAnti.toDouble(), y.toDouble()));
+    }
+  }
+
+  return barriers;
+}
+
 
   List<GameLevel> generateLevels(int count) {
     List<GameLevel> generatedLevels = [];
