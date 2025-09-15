@@ -18,7 +18,7 @@ class GameViewModel extends ChangeNotifier {
     loadGameProgress();
     _initializeLevelsData();
   }
-  int _rows = 30;
+  int _rows = 31;
   int _columns = 20;
   double _cellSize = 20.0;
 
@@ -40,10 +40,10 @@ class GameViewModel extends ChangeNotifier {
 
   final Duration _baseDuration = const Duration(milliseconds: 200);
   Duration get _currentDuration {
-    int dynamicReduction = (currentLevelIndex * 3);
+    int dynamicReduction = (currentLevelIndex * 2).floor();
 
     return Duration(
-      milliseconds: max(75, _baseDuration.inMilliseconds - dynamicReduction),
+      milliseconds: max(100, _baseDuration.inMilliseconds - dynamicReduction),
     );
   }
 
@@ -109,43 +109,42 @@ class GameViewModel extends ChangeNotifier {
     maxLevels = gameLevels.length;
   }
 
+  void initializeGame(
+    BuildContext context,
+    GamePadding gamePaddings, {
+    int? startLevelIndex,
+    int? customRows,
+    int? customColumns,
+  }) {
+    Future.microtask(() {
+      isGameInitialized = false;
+      notifyListeners();
 
-void initializeGame(
-  BuildContext context,
-  GamePadding gamePaddings, {
-  int? startLevelIndex,
-  int? customRows,
-  int? customColumns,
-}) {
-  Future.microtask(() {
-    isGameInitialized = false;
-    notifyListeners();
+      _gamePadding = gamePaddings;
 
-    _gamePadding = gamePaddings;
+      if (customRows != null && customColumns != null) {
+        _rows = customRows;
+        _columns = customColumns;
+        double cellWidth =
+            (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
+            _columns;
+        double cellHeight = gamePaddings.height / _rows;
+        _cellSize = min(cellWidth, cellHeight);
+      } else {
+        _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
+      }
 
-    if (customRows != null && customColumns != null) {
-      _rows = customRows;
-      _columns = customColumns;
-      double cellWidth =
-          (gamePaddings.width - gamePaddings.left - gamePaddings.right) /
-          _columns;
-      double cellHeight = gamePaddings.height / _rows;
-      _cellSize = min(cellWidth, cellHeight);
-    } else {
-      _calculateGridDimensions(Size(gamePaddings.width, gamePaddings.height));
-    }
+      currentLevelIndex = startLevelIndex ?? 0;
+      maxLevels = gameLevels.length;
 
-    currentLevelIndex = startLevelIndex ?? 0;
-    maxLevels = gameLevels.length;
+      _initializeLevel();
 
-    _initializeLevel();
+      startGame();
 
-    startGame();
-
-    isGameInitialized = true;
-    notifyListeners();
-  });
-}
+      isGameInitialized = true;
+      notifyListeners();
+    });
+  }
 
   void _initializeLevel() {
     if (currentLevelIndex >= gameLevels.length) {
@@ -153,7 +152,10 @@ void initializeGame(
     }
     GameLevel currentLevel = gameLevels[currentLevelIndex];
     _snake = List.from(currentLevel.snake);
-    barriers = currentLevel.levelBarriers;
+    // Create a deep, mutable copy of the barriers for the level
+    barriers = currentLevel.levelBarriers
+        .map((list) => List<Offset>.from(list))
+        .toList();
     currentLevelMaxScore = currentLevel.maxScore;
     currentLevelProgress = 0;
     currentLevelProgressInPercentage = 0.0;
@@ -162,7 +164,36 @@ void initializeGame(
     _direction = 'right';
     _nextDirection = 'right';
     hasNewHighScore = false;
-    _generateFood();
+
+    _generateFood(); // Generate initial food
+
+    // Check if the initial food position is accessible
+    if (!_isAccessible(snake.first, food, barriers)) {
+      // If not accessible, find and remove a barrier near the food to create a path
+      Offset? closestBarrier;
+      int listIndexToRemoveFrom = -1;
+      double minDistance = double.infinity;
+
+      for (int i = 0; i < barriers.length; i++) {
+        for (var barrierPoint in barriers[i]) {
+          double distance = (food - barrierPoint).distanceSquared;
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestBarrier = barrierPoint;
+            listIndexToRemoveFrom = i;
+          }
+        }
+      }
+
+      // If a closest barrier was found, remove it from the correct list
+      if (closestBarrier != null && listIndexToRemoveFrom != -1) {
+        barriers[listIndexToRemoveFrom].remove(closestBarrier);
+      }
+
+      // Regenerate food to ensure it's in a valid, accessible spot now
+      _generateFood();
+    }
+
     _generateBigScoreCell();
     eatFoodCounterToShowBigCell = 0;
     isBigScoreCellShouldAppear = false;
@@ -343,6 +374,23 @@ void initializeGame(
 
   void _generateFood() {
     Random random = Random();
+    int attempts = 0;
+    while (attempts < 200) {
+      // Limit attempts to prevent infinite loops
+      _food = Offset(
+        random.nextInt(_columns).toDouble(),
+        random.nextInt(_rows).toDouble(),
+      );
+      if (!_snake.contains(_food) &&
+          !_isBarrierCollision(_food) &&
+          _isAccessible(snake.first, _food, barriers)) {
+        return; // Found a valid, accessible spot
+      }
+      attempts++;
+    }
+
+    // Failsafe: If no accessible spot is found after many attempts,
+    // place it randomly away from snake and barriers.
     do {
       _food = Offset(
         random.nextInt(_columns).toDouble(),
@@ -367,65 +415,19 @@ void initializeGame(
     List<Offset> barriers,
     int initialSnakeLength,
   ) {
-    List<Offset> allPossiblePositions = [];
-    for (int y = initialSnakeLength; y < _rows - 2; y++) {
-      for (int x = 2; x < _columns - 2; x++) {
-        allPossiblePositions.add(Offset(x.toDouble(), y.toDouble()));
+    Offset startHead = const Offset(0, 0);
+
+    for (int i = 0; i < initialSnakeLength; i++) {
+      Offset segment = Offset(startHead.dx - i, startHead.dy);
+      if (barriers.contains(segment)) {
+        return const Offset(2, 0);
       }
     }
 
-    allPossiblePositions.shuffle(Random());
+    _direction = 'right';
+    _nextDirection = 'right';
 
-    for (Offset potentialHeadPos in allPossiblePositions) {
-      bool isCompletelySafe = true;
-
-      List<Offset> potentialSnake = List.generate(
-        initialSnakeLength,
-        (index) => Offset(potentialHeadPos.dx, potentialHeadPos.dy - index),
-      );
-
-      for (Offset segment in potentialSnake) {
-        if (barriers.contains(segment)) {
-          isCompletelySafe = false;
-          break;
-        }
-      }
-
-      if (!isCompletelySafe) {
-        continue;
-      }
-
-      Offset rightOfHead = Offset(potentialHeadPos.dx + 1, potentialHeadPos.dy);
-      Offset leftOfHead = Offset(potentialHeadPos.dx - 1, potentialHeadPos.dy);
-      Offset aboveHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy - 1);
-      Offset belowHead = Offset(potentialHeadPos.dx, potentialHeadPos.dy + 1);
-
-      if (barriers.contains(rightOfHead) &&
-          barriers.contains(leftOfHead) &&
-          barriers.contains(aboveHead) &&
-          barriers.contains(belowHead)) {
-        isCompletelySafe = false;
-      }
-
-      if (isCompletelySafe) {
-        if (!barriers.contains(rightOfHead)) {
-          _direction = 'right';
-          _nextDirection = 'right';
-        } else if (!barriers.contains(leftOfHead)) {
-          _direction = 'left';
-          _nextDirection = 'left';
-        } else if (!barriers.contains(belowHead)) {
-          _direction = 'down';
-          _nextDirection = 'down';
-        } else {
-          _direction = 'up';
-          _nextDirection = 'up';
-        }
-        return potentialHeadPos;
-      }
-    }
-
-    return const Offset(10, 10);
+    return startHead;
   }
 
   List<Offset> _getCornerClustersPattern() {
@@ -469,23 +471,38 @@ void initializeGame(
     List<Offset> barriers = [];
     int leftX = (_columns * 0.3).floor();
     int rightX = (_columns * 0.65).floor();
+    int gapSize = 4;
+    int gapStart = _rows ~/ 2 - gapSize ~/ 2;
+
     for (int i = (_rows * 0.1).floor(); i < (_rows * 0.9).floor(); i++) {
-      barriers.add(Offset(leftX.toDouble(), i.toDouble()));
-      barriers.add(Offset(rightX.toDouble(), i.toDouble()));
+      if (i < gapStart || i >= gapStart + gapSize) {
+        barriers.add(Offset(leftX.toDouble(), i.toDouble()));
+        barriers.add(Offset(rightX.toDouble(), i.toDouble()));
+      }
     }
     return barriers;
   }
 
   List<Offset> _getCrossPattern() {
     List<Offset> barriers = [];
-    int midX = (_columns ~/ 2);
-    int midY = (_rows ~/ 2);
+    int midX = _columns ~/ 2;
+    int midY = _rows ~/ 2;
+    int gapSize = 4;
 
+    // Horizontal line with a gap in the middle
+    int hGapStart = midX - gapSize ~/ 2;
     for (int i = (_columns * 0.2).floor(); i < (_columns * 0.8).floor(); i++) {
-      barriers.add(Offset(i.toDouble(), midY.toDouble()));
+      if (i < hGapStart || i >= hGapStart + gapSize) {
+        barriers.add(Offset(i.toDouble(), midY.toDouble()));
+      }
     }
+
+    // Vertical line with a gap in the middle
+    int vGapStart = midY - gapSize ~/ 2;
     for (int i = (_rows * 0.2).floor(); i < (_rows * 0.8).floor(); i++) {
-      barriers.add(Offset(midX.toDouble(), i.toDouble()));
+      if (i < vGapStart || i >= vGapStart + gapSize) {
+        barriers.add(Offset(midX.toDouble(), i.toDouble()));
+      }
     }
     return barriers;
   }
@@ -497,27 +514,87 @@ void initializeGame(
     int topY = (_rows * 0.25).floor();
     int bottomY = (_rows * 0.75).floor();
 
+    // A guaranteed gap in the middle of the bottom wall.
+    // This is the key change to prevent the box from ever being fully closed.
+    int gapSize = 4;
+    int gapStart = leftX + (rightX - leftX - gapSize) ~/ 2;
+
+    // Top wall (Complete)
     for (int i = leftX; i <= rightX; i++) {
-      barriers.add(Offset(i.toDouble(), topY.toDouble())); // top
-      barriers.add(Offset(i.toDouble(), bottomY.toDouble())); // bottom
+      barriers.add(Offset(i.toDouble(), topY.toDouble()));
     }
+
+    // Bottom wall (with a guaranteed opening)
+    for (int i = leftX; i <= rightX; i++) {
+      if (i < gapStart || i >= gapStart + gapSize) {
+        barriers.add(Offset(i.toDouble(), bottomY.toDouble()));
+      }
+    }
+
+    // Left wall (Complete)
     for (int j = topY; j <= bottomY; j++) {
-      barriers.add(Offset(leftX.toDouble(), j.toDouble())); // left
-      barriers.add(Offset(rightX.toDouble(), j.toDouble())); // right
+      barriers.add(Offset(leftX.toDouble(), j.toDouble()));
     }
+
+    // Right wall (Complete)
+    for (int j = topY; j <= bottomY; j++) {
+      barriers.add(Offset(rightX.toDouble(), j.toDouble()));
+    }
+
     return barriers;
   }
 
   List<Offset> _getDiagonalLinesPattern() {
     List<Offset> barriers = [];
-    int minDim = min(_rows, _columns);
-    for (int i = 2; i < minDim - 2; i++) {
-      barriers.add(Offset(i.toDouble(), i.toDouble())); // \ main diagonal
-      barriers.add(
-        Offset((_columns - 1 - i).toDouble(), i.toDouble()),
-      ); // / anti-diagonal
+    if (_rows <= 1 || _columns <= 1) return barriers;
+
+    for (int y = 1; y < _rows - 1; y++) {
+      double t = y / (_rows - 1);
+      int xMain = (t * (_columns - 1)).round();
+      int xAnti = (_columns - 1) - xMain;
+
+      barriers.add(Offset(xMain.toDouble(), y.toDouble()));
+      if (xAnti != xMain) {
+        barriers.add(Offset(xAnti.toDouble(), y.toDouble()));
+      }
     }
+
     return barriers;
+  }
+
+  bool _isAccessible(Offset start, Offset end, List<List<Offset>> barriers) {
+    if (start == end) return true;
+
+    Set<Offset> visited = {};
+    List<Offset> queue = [start];
+    visited.add(start);
+
+    while (queue.isNotEmpty) {
+      Offset current = queue.removeAt(0);
+
+      if (current == end) return true;
+
+      List<Offset> neighbors = [
+        Offset(current.dx, current.dy - 1), // up
+        Offset(current.dx, current.dy + 1), // down
+        Offset(current.dx - 1, current.dy), // left
+        Offset(current.dx + 1, current.dy), // right
+      ];
+
+      for (var neighbor in neighbors) {
+        if (neighbor.dx >= 0 &&
+            neighbor.dx < columns &&
+            neighbor.dy >= 0 &&
+            neighbor.dy < rows &&
+            !visited.contains(neighbor) &&
+            !barriers.any((list) => list.contains(neighbor))) {
+          visited.add(neighbor);
+          queue.add(neighbor);
+        }
+      }
+    }
+
+    return false;
   }
 
   List<GameLevel> generateLevels(int count) {
@@ -546,11 +623,10 @@ void initializeGame(
         barriers = basePatterns[(levelNumber - 61) % basePatterns.length]();
         barriers.addAll(_getCrossPattern());
       } else if (levelNumber <= 120) {
-        barriers = basePatterns[(levelNumber - 91) % basePatterns.length]();
+        barriers = basePatterns[(levelNumber - 71) % basePatterns.length]();
         barriers.addAll(_getCrossPattern());
       } else {
-        barriers = basePatterns[(levelNumber - 121) % basePatterns.length]();
-        barriers.addAll(_getDiagonalLinesPattern());
+        barriers = _getDiagonalLinesPattern();
       }
 
       if (levelNumber > 100) {
