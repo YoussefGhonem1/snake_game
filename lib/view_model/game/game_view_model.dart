@@ -305,6 +305,7 @@ class GameViewModel extends ChangeNotifier {
     _playEatSound();
     if (++eatFoodCounterToShowBigCell == 5) {
       isBigScoreCellShouldAppear = true;
+      _generateBigScoreCell();
       eatFoodCounterToShowBigCell = 0;
     }
     notifyListeners();
@@ -313,7 +314,7 @@ class GameViewModel extends ChangeNotifier {
   void _eatBigScoreCell() {
     _addScore(30);
     isBigScoreCellShouldAppear = false;
-    _generateBigScoreCell();
+    //_generateBigScoreCell();
     _playEatSound();
     notifyListeners();
   }
@@ -409,6 +410,16 @@ class GameViewModel extends ChangeNotifier {
     } while (_snake.contains(_bigScoreCell) ||
         _isBarrierCollision(_bigScoreCell) ||
         _food == _bigScoreCell);
+
+    isBigScoreCellShouldAppear = true;
+    notifyListeners();
+
+    Future.delayed(Duration(seconds: 20), () {
+      if (isBigScoreCellShouldAppear) {
+        isBigScoreCellShouldAppear = false;
+        notifyListeners();
+      }
+    });
   }
 
   Offset _findSafeStartingPosition(
