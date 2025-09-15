@@ -324,7 +324,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // Level Mode button
               _buildMainButton(
                 title: context.tr('level_mode').toUpperCase(),
-                subtitle: context.tr('progressive_level_unlocking'),
                 icon: Icons.trending_up,
                 gradient: LinearGradient(
                   colors: [
@@ -347,7 +346,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // Free Mode button
               _buildMainButton(
                 title: context.tr('free_mode').toUpperCase(),
-                subtitle: context.tr('choose_level_play_infinitely'),
                 icon: Icons.all_inclusive,
                 gradient: LinearGradient(
                   colors: [colorHelper.primary, colorHelper.levelProgressColor],
@@ -361,7 +359,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // SNakes Store button
               _buildMainButton(
                 title: context.tr('snake_store').toUpperCase(),
-                subtitle: context.tr('buy_snakes_and_customize'),
                 icon: Icons.store,
                 gradient: LinearGradient(
                   colors: [colorHelper.primary, colorHelper.levelProgressColor],
@@ -386,7 +383,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildMainButton({
     required String title,
-    required String subtitle,
     required IconData icon,
     required Gradient gradient,
     required VoidCallback onTap,
@@ -395,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       onPressed: onTap,
       icon: Container(
         width: 280,
-        height: 80,
+        height: 75,
         decoration: BoxDecoration(
           gradient: gradient,
           borderRadius: BorderRadius.circular(25),
@@ -435,13 +431,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
-                    ),
-                  ),
                 ],
               ),
             ),
