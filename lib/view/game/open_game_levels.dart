@@ -39,6 +39,16 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount;
+    if (screenWidth > 900) {
+      crossAxisCount = 5;
+    } else if (screenWidth > 600) {
+      crossAxisCount = 4;
+    } else {
+      crossAxisCount = 3;
+    }
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -105,13 +115,12 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
                         vertical: 20,
                       ),
                       itemCount: _isFreeMode ? 1 : gameViewModel.maxLevels,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 1.0,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        childAspectRatio: 1.0,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
                       itemBuilder: (context, index) {
                         return getLevelWidget(context, index, gameViewModel);
                       },
@@ -132,7 +141,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
     GameViewModel gameViewModel,
   ) {
     bool isLevelUnlocked = index < gameViewModel.maxUnlockedLevel;
-   // bool isLevelUnlocked = true;
+    // bool isLevelUnlocked = true;
     if (!isLevelUnlocked && !_isFreeMode) {
       return InkWell(
         onTap: () {
