@@ -247,6 +247,7 @@ class FreeModeGameViewModel extends ChangeNotifier {
     showParticles = true;
     _playEatSound();
     if (++eatFoodCounterToShowBigCell == 5) {
+      _generateBigScoreCell();
       isBigScoreCellShouldAppear = true;
       eatFoodCounterToShowBigCell = 0;
     }
@@ -256,7 +257,7 @@ class FreeModeGameViewModel extends ChangeNotifier {
   void _eatBigScoreCell() {
     _addScore(30);
     isBigScoreCellShouldAppear = false;
-    _generateBigScoreCell();
+    // _generateBigScoreCell();
     _playEatSound();
     notifyListeners();
   }
@@ -314,6 +315,16 @@ class FreeModeGameViewModel extends ChangeNotifier {
     } while (_snake.contains(_bigScoreCell) ||
         _isBarrierCollision(_bigScoreCell) ||
         _food == _bigScoreCell);
+
+    isBigScoreCellShouldAppear = true;
+    notifyListeners();
+
+    Future.delayed(Duration(seconds: 20), () {
+      if (isBigScoreCellShouldAppear) {
+        isBigScoreCellShouldAppear = false;
+        notifyListeners();
+      }
+    });
   }
 
   List<Offset> getBarriersLevelOne() => [];
