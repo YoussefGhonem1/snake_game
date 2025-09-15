@@ -232,32 +232,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               //   ),
               Center(
                 child: Image.asset(
-                  'assets/images/homelogo.png',
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.contain,
+                  'assets/images/white.png',
+                  width: 250,
+                  height: 215,
+                  fit: BoxFit.cover,
                   //scolor: Colors.white,
                   colorBlendMode: BlendMode.srcIn,
                 ),
               ),
               //const SizedBox(height: 10),
               // Game Title
-              Text(
-                context.tr('snake_game'),
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: colorHelper.primary,
-                  shadows: [
-                    Shadow(
-                      color: colorHelper.primary.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-              ),
+              // Text(
+              //   context.tr('snake_game'),
+              //   style: TextStyle(
+              //     fontSize: 32,
+              //     fontWeight: FontWeight.bold,
+              //     color: colorHelper.primary,
+              //     shadows: [
+              //       Shadow(
+              //         color: colorHelper.primary.withOpacity(0.5),
+              //         blurRadius: 10,
+              //         offset: const Offset(0, 2),
+              //       ),
+              //     ],
+              //   ),
+              //   textAlign: TextAlign.center,
+              // ),
             ],
           ),
         );
