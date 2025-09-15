@@ -338,17 +338,24 @@ class _GameBoardState extends State<GameBoard>
       left: provider.gamePadding.left,
       right: provider.gamePadding.right,
       top:
-          provider.gamePadding.top +
-          25, // Minimal offset for maximum game space
+          provider.gamePadding.top -
+          70, // Minimal offset for maximum game space
       bottom: 10, // Final micro-adjustment to show complete snake
       child: Center(
         child: Container(
-          width:
-              provider.gamePadding.width -
-              provider.gamePadding.left -
-              provider.gamePadding.right,
+          width: provider.columns * provider.cellSize,
+          height: provider.rows * provider.cellSize,
           clipBehavior:
               Clip.none, // Allow content to extend beyond bounds if needed
+          decoration: provider.currentLevelIndex >= 99
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: ColorHelper.instance.primary.withOpacity(0.3),
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                )
+              : null,
           child: Stack(
             clipBehavior: Clip.none, // Prevent clipping of snake segments
             children: [
@@ -367,6 +374,11 @@ class _GameBoardState extends State<GameBoard>
   }
 
   Widget _buildGrid(GameViewModel provider) {
+    // Hide grid from level 100 onwards
+    if (provider.currentLevelIndex >= 99) {
+      return const SizedBox.shrink();
+    }
+
     final customGridColor =
         provider.gameLevels[provider.currentLevelIndex].gridColor;
 
