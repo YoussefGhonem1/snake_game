@@ -741,39 +741,49 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     return 0; // No rotation for straight segments
   }
 
-  Widget _buildBigScoreCell(FreeModeGameViewModel provider) {
-    return AnimatedBuilder(
-      animation: provider.bigScoreAnimationController!,
-      builder: (context, child) {
-        double progress = provider.bigScoreAnimationController!.value;
-        double scale = 1.0 + math.sin(progress * math.pi) * 0.5;
-        return Positioned(
-          left: provider.bigScoreCell.dx * provider.cellSize,
-          top: provider.bigScoreCell.dy * provider.cellSize,
-          child: Transform.scale(
-            scale: scale,
-            child: Container(
-              width: provider.cellSize,
-              height: provider.cellSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: ColorHelper.instance.bigScoreGradient,
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorHelper.instance.bigScoreGlowColor.withOpacity(
-                      0.8,
-                    ),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-            ),
+ // In lib/view/game/free_mode_game_board.dart
+
+Widget _buildBigScoreCell(FreeModeGameViewModel provider) { // تأكد من أن النوع هو FreeModeGameViewModel
+  return Positioned(
+    left: provider.bigScoreCell.dx * provider.cellSize,
+    top: provider.bigScoreCell.dy * provider.cellSize,
+    child: Container(
+      width: provider.cellSize * 1.5,
+      height: provider.cellSize * 1.5,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            ColorHelper.instance.scoreColor,
+            ColorHelper.instance.scoreColor.withOpacity(0.7),
+          ],
+        ),
+        border: Border.all(
+          color: Colors.yellow,
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: ColorHelper.instance.scoreColor.withOpacity(0.8),
+            blurRadius: 20,
+            spreadRadius: 5,
           ),
-        );
-      },
-    );
-  }
+        ],
+      ),
+      child: Center(
+        child: Text(
+          // استخدام المتغير الجديد
+          '${provider.bigScoreCellRemainingTime}',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: provider.cellSize * 0.7,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
   Widget _buildUI(FreeModeGameViewModel provider) {
     return Positioned.fill(child: Column(children: [_buildScoreBar(provider)]));

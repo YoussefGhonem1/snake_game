@@ -11,7 +11,8 @@ class FreeModeGameViewModel extends ChangeNotifier {
   int _rows = 30;
   int _columns = 20;
   double _cellSize = 20.0;
-
+  Timer? _bigScoreCellTimer;
+int bigScoreCellRemainingTime = 10;
   // Game state management
   int highScore = 0;
   bool hasNewHighScore = false;
@@ -254,13 +255,13 @@ class FreeModeGameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _eatBigScoreCell() {
-    _addScore(30);
-    isBigScoreCellShouldAppear = false;
-    // _generateBigScoreCell();
-    _playEatSound();
-    notifyListeners();
-  }
+ void _eatBigScoreCell() {
+  _addScore(30);
+  isBigScoreCellShouldAppear = false;
+  _bigScoreCellTimer?.cancel();
+  _playEatSound();
+  notifyListeners();
+}
 
   void _addScore(int points) {
     _numericScore += points;
@@ -305,28 +306,33 @@ class FreeModeGameViewModel extends ChangeNotifier {
     } while (_snake.contains(_food) || _isBarrierCollision(_food));
   }
 
-  void _generateBigScoreCell() {
-    Random random = Random();
-    do {
-      _bigScoreCell = Offset(
-        random.nextInt(_columns).toDouble(),
-        random.nextInt(_rows).toDouble(),
-      );
-    } while (_snake.contains(_bigScoreCell) ||
-        _isBarrierCollision(_bigScoreCell) ||
-        _food == _bigScoreCell);
+void _generateBigScoreCell() {
+  Random random = Random();
+  do {
+    _bigScoreCell = Offset(
+      random.nextInt(_columns).toDouble(),
+      random.nextInt(_rows).toDouble(),
+    );
+  } while (_snake.contains(_bigScoreCell) ||
+      _isBarrierCollision(_bigScoreCell) ||
+      _food == _bigScoreCell);
 
-    isBigScoreCellShouldAppear = true;
-    notifyListeners();
+  isBigScoreCellShouldAppear = true;
+  bigScoreCellRemainingTime = 10; 
+  notifyListeners();
 
-    Future.delayed(Duration(seconds: 20), () {
-      if (isBigScoreCellShouldAppear) {
-        isBigScoreCellShouldAppear = false;
-        notifyListeners();
-      }
-    });
-  }
-
+  _bigScoreCellTimer?.cancel(); 
+  _bigScoreCellTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    if (bigScoreCellRemainingTime > 0) {
+      bigScoreCellRemainingTime--;
+      notifyListeners();
+    } else {
+      isBigScoreCellShouldAppear = false;
+      timer.cancel();
+      notifyListeners();
+    }
+  });
+}
   List<Offset> getBarriersLevelOne() => [];
   List<Offset> getBarriersLevelTwo() {
     List<Offset> barriers = [];
@@ -430,5 +436,12 @@ class FreeModeGameViewModel extends ChangeNotifier {
 
   void _playGameOverSound() {
     SoundHelper.instance.playGameOverSound();
+  }
+    @override
+  void dispose() {
+    _timer?.cancel();
+      _bigScoreCellTimer?.cancel();
+    bigScoreAnimationController?.dispose();
+    super.dispose();
   }
 }
