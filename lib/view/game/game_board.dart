@@ -35,7 +35,6 @@ class _GameBoardState extends State<GameBoard>
   late AnimationController _scoreController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _glowAnimation;
-  late Animation<double> _scoreAnimation;
 
   @override
   void initState() {
@@ -66,9 +65,6 @@ class _GameBoardState extends State<GameBoard>
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    _scoreAnimation = Tween<double>(begin: 1.0, end: 1.5).animate(
-      CurvedAnimation(parent: _scoreController, curve: Curves.elasticOut),
-    );
 
     double topBarHeight = 120.0;
     double bottomPadding = 20.0;
@@ -756,50 +752,49 @@ class _GameBoardState extends State<GameBoard>
     return 0; // No rotation for straight segments
   }
 
-  Widget _buildBigScoreCell(GameViewModel provider) {
-    return AnimatedBuilder(
-      animation: _scoreController,
-      builder: (context, child) {
-        return Positioned(
-          left: provider.bigScoreCell.dx * provider.cellSize,
-          top: provider.bigScoreCell.dy * provider.cellSize,
-          child: Transform.scale(
-            scale: _scoreAnimation.value,
-            child: Container(
-              width: provider.cellSize * 1.5,
-              height: provider.cellSize * 1.5,
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [
-                    ColorHelper.instance.scoreColor,
-                    ColorHelper.instance.scoreColor.withOpacity(0.7),
-                  ],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorHelper.instance.scoreColor.withOpacity(0.8),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  '★',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: provider.cellSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+// In lib/view/game/game_board.dart
+
+Widget _buildBigScoreCell(GameViewModel provider) {
+  return Positioned(
+    left: provider.bigScoreCell.dx * provider.cellSize,
+    top: provider.bigScoreCell.dy * provider.cellSize,
+    child: Container(
+      width: provider.cellSize * 1.5,
+      height: provider.cellSize * 1.5,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            ColorHelper.instance.scoreColor,
+            ColorHelper.instance.scoreColor.withOpacity(0.7),
+          ],
+        ),
+        border: Border.all(
+          color: Colors.yellow,
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: ColorHelper.instance.scoreColor.withOpacity(0.8),
+            blurRadius: 20,
+            spreadRadius: 5,
           ),
-        );
-      },
-    );
-  }
+        ],
+      ),
+      child: Center(
+        child: Text(
+          // الآن سيعمل هذا السطر بنجاح
+          '${provider.bigScoreCellRemainingTime}',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: provider.cellSize * 0.7,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
   Widget _buildUI(GameViewModel provider) {
     return Column(children: [_buildTopBar(provider), const Spacer()]);
