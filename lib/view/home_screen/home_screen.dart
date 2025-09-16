@@ -172,18 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-
-                      //Bottom section with settings
-                      // Expanded(
-                      //   flex: 2,
-                      //   child: Column(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
                       _buildBottomActions(),
-                      //       const SizedBox(height: 20),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -210,26 +199,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           scale: _logoAnimation.value,
           child: Column(
             children: [
-              // Container(
-              //   width: 120,
-              //   height: 120,
-              //   decoration: BoxDecoration(
-              //     gradient: RadialGradient(
-              //       colors: [
-              //         colorHelper.snakeHeadColor,
-              //         colorHelper.snakeBodyColor,
-              //         colorHelper.snakeBodyGradientEnd,
-              //       ],
-              //     ),
-              //     shape: BoxShape.circle,
-              //     boxShadow: [
-              //       BoxShadow(
-              //         color: colorHelper.snakeHeadColor.withOpacity(0.6),
-              //         blurRadius: 30,
-              //         spreadRadius: 10,
-              //       ),
-              //     ],
-              //   ),
               Center(
                 child: Image.asset(
                   'assets/images/white.png',
@@ -240,24 +209,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   colorBlendMode: BlendMode.srcIn,
                 ),
               ),
-              //const SizedBox(height: 10),
-              // Game Title
-              // Text(
-              //   context.tr('snake_game'),
-              //   style: TextStyle(
-              //     fontSize: 32,
-              //     fontWeight: FontWeight.bold,
-              //     color: colorHelper.primary,
-              //     shadows: [
-              //       Shadow(
-              //         color: colorHelper.primary.withOpacity(0.5),
-              //         blurRadius: 10,
-              //         offset: const Offset(0, 2),
-              //       ),
-              //     ],
-              //   ),
-              //   textAlign: TextAlign.center,
-              // ),
             ],
           ),
         );

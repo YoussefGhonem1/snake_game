@@ -60,9 +60,9 @@ class _SplashScreenState extends State<SplashScreen>
             return Transform.scale(
               scale: _scaleAnimation.value,
               child: SizedBox(
-                width: 300,
-                height: 300,
-                child: Image.asset("assets/images/logooo.png"),
+                width: 600,
+                height: 600,
+                child: Image.asset("assets/images/white.png"),
               ),
             );
           },
