@@ -248,6 +248,31 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     );
   }
 
+  Widget _buildDialogButton1(
+    String text,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.38,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: ColorHelper.instance.onPrimary),
+        label: Text(
+          text,
+          style: TextStyle(color: ColorHelper.instance.onPrimary),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorHelper.instance.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
+      ),
+    );
+  }
+
   Widget _buildAchievementButton(
     String text,
     IconData icon,
@@ -259,7 +284,7 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
         return Transform.scale(
           scale: 1.0 + (_pulseAnimation.value - 1.0) * 0.05,
           child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.35,
+            width: MediaQuery.of(context).size.width * 0.4,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
@@ -741,49 +766,47 @@ class _FreeModeGameBoardState extends State<FreeModeGameBoard>
     return 0; // No rotation for straight segments
   }
 
- // In lib/view/game/free_mode_game_board.dart
+  // In lib/view/game/free_mode_game_board.dart
 
-Widget _buildBigScoreCell(FreeModeGameViewModel provider) { // تأكد من أن النوع هو FreeModeGameViewModel
-  return Positioned(
-    left: provider.bigScoreCell.dx * provider.cellSize,
-    top: provider.bigScoreCell.dy * provider.cellSize,
-    child: Container(
-      width: provider.cellSize * 1.5,
-      height: provider.cellSize * 1.5,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [
-            ColorHelper.instance.scoreColor,
-            ColorHelper.instance.scoreColor.withOpacity(0.7),
+  Widget _buildBigScoreCell(FreeModeGameViewModel provider) {
+    // تأكد من أن النوع هو FreeModeGameViewModel
+    return Positioned(
+      left: provider.bigScoreCell.dx * provider.cellSize,
+      top: provider.bigScoreCell.dy * provider.cellSize,
+      child: Container(
+        width: provider.cellSize * 1.5,
+        height: provider.cellSize * 1.5,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              ColorHelper.instance.scoreColor,
+              ColorHelper.instance.scoreColor.withOpacity(0.7),
+            ],
+          ),
+          border: Border.all(color: Colors.yellow, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: ColorHelper.instance.scoreColor.withOpacity(0.8),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
           ],
         ),
-        border: Border.all(
-          color: Colors.yellow,
-          width: 3,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: ColorHelper.instance.scoreColor.withOpacity(0.8),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          // استخدام المتغير الجديد
-          '${provider.bigScoreCellRemainingTime}',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: provider.cellSize * 0.7,
-            fontWeight: FontWeight.bold,
+        child: Center(
+          child: Text(
+            // استخدام المتغير الجديد
+            '${provider.bigScoreCellRemainingTime}',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: provider.cellSize * 0.7,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildUI(FreeModeGameViewModel provider) {
     return Positioned.fill(child: Column(children: [_buildScoreBar(provider)]));
@@ -1156,12 +1179,12 @@ Widget _buildBigScoreCell(FreeModeGameViewModel provider) { // تأكد من أ�
             const SizedBox(height: 35),
             Column(
               children: [
-                _buildDialogButton(context.tr('try_again'), Icons.refresh, () {
+                _buildDialogButton1(context.tr('try_again'), Icons.refresh, () {
                   Navigator.of(context).pop();
                   gameViewModel.restartGame();
                 }),
                 const SizedBox(height: 12),
-                _buildDialogButton(context.tr('exit'), Icons.exit_to_app, () {
+                _buildDialogButton1(context.tr('exit'), Icons.exit_to_app, () {
                   Navigator.of(context).pop(); // Close dialog
                   Navigator.of(context).pop(); // Exit game screen
                 }),
