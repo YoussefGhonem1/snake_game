@@ -22,7 +22,7 @@ class GameViewModel extends ChangeNotifier {
   int _columns = 20;
   double _cellSize = 20.0;
   Timer? _bigScoreCellTimer;
-int bigScoreCellRemainingTime = 10;
+  int bigScoreCellRemainingTime = 10;
   // Game mode and state management
   GameMode currentGameMode = GameMode.levelMode;
   int maxUnlockedLevel = 1;
@@ -312,13 +312,13 @@ int bigScoreCellRemainingTime = 10;
     notifyListeners();
   }
 
-void _eatBigScoreCell() {
-  _addScore(30);
-  isBigScoreCellShouldAppear = false;
-  _bigScoreCellTimer?.cancel(); 
-  _playEatSound();
-  notifyListeners();
-}
+  void _eatBigScoreCell() {
+    _addScore(30);
+    isBigScoreCellShouldAppear = false;
+    _bigScoreCellTimer?.cancel();
+    _playEatSound();
+    notifyListeners();
+  }
 
   void _addScore(int points) {
     _numericScore += points;
@@ -343,7 +343,7 @@ void _eatBigScoreCell() {
     if (!_isPlaying) return;
     _timer?.cancel();
     _isPlaying = false;
-    // saveNextLevel();
+    saveNextLevel();
     saveGameProgress().then((_) {
       _playLevelCompleteSound();
       AdMobHelper.showInterstitialAd();
@@ -401,33 +401,33 @@ void _eatBigScoreCell() {
     } while (_snake.contains(_food) || _isBarrierCollision(_food));
   }
 
-void _generateBigScoreCell() {
-  Random random = Random();
-  do {
-    _bigScoreCell = Offset(
-      random.nextInt(_columns).toDouble(),
-      random.nextInt(_rows).toDouble(),
-    );
-  } while (_snake.contains(_bigScoreCell) ||
-      _isBarrierCollision(_bigScoreCell) ||
-      _food == _bigScoreCell);
+  void _generateBigScoreCell() {
+    Random random = Random();
+    do {
+      _bigScoreCell = Offset(
+        random.nextInt(_columns).toDouble(),
+        random.nextInt(_rows).toDouble(),
+      );
+    } while (_snake.contains(_bigScoreCell) ||
+        _isBarrierCollision(_bigScoreCell) ||
+        _food == _bigScoreCell);
 
-  isBigScoreCellShouldAppear = true;
-  bigScoreCellRemainingTime = 10; 
-  notifyListeners();
+    isBigScoreCellShouldAppear = true;
+    bigScoreCellRemainingTime = 10;
+    notifyListeners();
 
-  _bigScoreCellTimer?.cancel();
-  _bigScoreCellTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-    if (bigScoreCellRemainingTime > 0) {
-      bigScoreCellRemainingTime--;
-      notifyListeners();
-    } else {
-      isBigScoreCellShouldAppear = false;
-      timer.cancel();
-      notifyListeners();
-    }
-  });
-}
+    _bigScoreCellTimer?.cancel();
+    _bigScoreCellTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (bigScoreCellRemainingTime > 0) {
+        bigScoreCellRemainingTime--;
+        notifyListeners();
+      } else {
+        isBigScoreCellShouldAppear = false;
+        timer.cancel();
+        notifyListeners();
+      }
+    });
+  }
 
   Offset _findSafeStartingPosition(
     List<Offset> barriers,
@@ -786,7 +786,7 @@ void _generateBigScoreCell() {
   @override
   void dispose() {
     _timer?.cancel();
-      _bigScoreCellTimer?.cancel();
+    _bigScoreCellTimer?.cancel();
     bigScoreAnimationController?.dispose();
     nextLevelAnimationController?.dispose();
     super.dispose();
