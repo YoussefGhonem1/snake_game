@@ -48,7 +48,7 @@
   "your_score_text": "نقاطك",
   "high_score": "اعلي نقاط : {}",
   "max_free_mode_score": "مجموع النقاط",
-  "level": "المستوى : {}",
+  "level": "المستوى",
   "levels": "المستويات",
   "settings": "الإعدادات",
   "profile": "الملف الشخصي",
@@ -126,7 +126,7 @@
   "glacira": "روح الجليد",
   "aetherion": "ظل السماوات",
   "lumora": "المتوهج",
-  "snake_store": "متجر الثعابين",
+  "snake_store": "المتجر",
   "points": "النقاط",
   "locked": "مقفول"
 }

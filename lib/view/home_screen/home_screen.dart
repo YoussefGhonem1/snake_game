@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               Center(
                 child: Image.asset(
-                  'assets/images/homelogo.png',
+                  'assets/images/logo.png',
                   width: 250,
                   height: 215,
                   fit: BoxFit.cover,
@@ -239,8 +239,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.emoji_events, color: colorHelper.scoreColor, size: 24),
-          const SizedBox(width: 12),
           Text(
             context.tr('max_free_mode_score'),
             style: TextStyle(
@@ -259,6 +257,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               fontFamily: 'monospace',
             ),
           ),
+          const SizedBox(width: 12),
+          Icon(Icons.emoji_events, color: colorHelper.scoreColor, size: 24),
         ],
       ),
     );
@@ -272,6 +272,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           scale: _buttonAnimation.value,
           child: Column(
             children: [
+              //const SizedBox(height: 20),
+
+              // Free Mode button
+              _buildMainButton(
+                title: context.tr('free_mode').toUpperCase(),
+                icon: Icons.all_inclusive,
+                gradient: LinearGradient(
+                  colors: [colorHelper.primary, colorHelper.levelProgressColor],
+                ),
+                onTap: () {
+                  // Navigate to level selection for Free Mode
+                  navigateTo(context, RoutePath.freeModeGameScreen);
+                },
+              ),
               // Level Mode button
               _buildMainButton(
                 title: context.tr('level_mode').toUpperCase(),
@@ -291,22 +305,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   );
                 },
               ),
-
-              //const SizedBox(height: 20),
-
-              // Free Mode button
-              _buildMainButton(
-                title: context.tr('free_mode').toUpperCase(),
-                icon: Icons.all_inclusive,
-                gradient: LinearGradient(
-                  colors: [colorHelper.primary, colorHelper.levelProgressColor],
-                ),
-                onTap: () {
-                  // Navigate to level selection for Free Mode
-                  navigateTo(context, RoutePath.freeModeGameScreen);
-                },
-              ),
-
               // SNakes Store button
               _buildMainButton(
                 title: context.tr('snake_store').toUpperCase(),
@@ -394,9 +392,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildBottomActions() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildLanguageToggle(),
+        SizedBox(width: 12),
         _buildActionButton(
           icon: Icons.info_outline,
           label: context.tr('about'),
@@ -427,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Icon(Icons.language, color: colorHelper.primary, size: 24),
             const SizedBox(height: 4),
             Text(
-              isArabic ? 'EN' : 'عر',
+              isArabic ? 'English' : 'عربي',
               style: TextStyle(
                 color: colorHelper.primary,
                 fontSize: 12,

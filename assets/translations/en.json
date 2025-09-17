@@ -46,8 +46,8 @@
   "your_score": "Your Score : {}",
   "your_score_text": "Your Score",
   "high_score": "High Score : {}",
-  "max_free_mode_score": "Max Free Mode",
-  "level": "Level {}",
+  "max_free_mode_score": "Total Points",
+  "level": "Level",
   "levels": "Levels",
   "settings": "Settings",
   "profile": "Profile",
@@ -127,7 +127,7 @@
   "glacira": "Glacira",
   "aetherion": "Aetherion",
   "lumora": "Lumora",
-  "snake_store": "Snake Store",
+  "snake_store": "Store",
   "points": "Points",
   "locked": "Locked"
 }
