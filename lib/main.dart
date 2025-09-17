@@ -24,14 +24,14 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     EasyLocalization.ensureInitialized();
     // final prefs = await SharedPreferences.getInstance();
-     //await prefs.clear();
+    //await prefs.clear();
 
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-      await MobileAds.instance.initialize();
-       AdMobHelper.loadInterstitialAd();
-    
+    await MobileAds.instance.initialize();
+    AdMobHelper.loadInterstitialAd();
+
     await GameHelper.instance.initGameHelper();
     Locale savedLocale = await LanguageHelper.instance.getSavedLocale();
 
@@ -143,7 +143,7 @@ class GameApp extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        title: 'Snake Game',
+        title: 'Snakes Game',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
