@@ -29,6 +29,19 @@ class FreeModeGameViewModel extends ChangeNotifier {
 
   final Duration _baseDuration = const Duration(milliseconds: 300);
 
+  Duration get _currentDuration {
+    // Speed increases based on score - every 50 points reduces duration by 10ms
+    int speedIncrease = (_numericScore ~/ 35) * 10;
+    int minDuration = 100; // Minimum duration to prevent too fast movement
+    int maxDuration = 300; // Maximum duration (starting speed)
+
+    int currentDuration = max(
+      minDuration,
+      _baseDuration.inMilliseconds - speedIncrease,
+    );
+    return Duration(milliseconds: min(maxDuration, currentDuration));
+  }
+
   String score = "000000";
   int _numericScore = 0;
   late List<Offset> _snake;
@@ -158,9 +171,18 @@ class FreeModeGameViewModel extends ChangeNotifier {
     _timer?.cancel();
     _isPlaying = true;
     _isPaused = false;
-    _timer = Timer.periodic(_baseDuration, (timer) {
+    _timer = Timer.periodic(_currentDuration, (timer) {
       if (!_isPaused) _moveSnake();
     });
+  }
+
+  void _restartTimerWithNewSpeed() {
+    if (_isPlaying && !_isPaused) {
+      _timer?.cancel();
+      _timer = Timer.periodic(_currentDuration, (timer) {
+        if (!_isPaused) _moveSnake();
+      });
+    }
   }
 
   void pauseGame() {
@@ -264,8 +286,17 @@ class FreeModeGameViewModel extends ChangeNotifier {
   }
 
   void _addScore(int points) {
+    int oldScore = _numericScore;
     _numericScore += points;
     score = _numericScore.toString().padLeft(6, '0');
+
+    // Check if speed should increase (every 50 points)
+    int oldSpeedLevel = oldScore ~/ 50;
+    int newSpeedLevel = _numericScore ~/ 50;
+
+    if (newSpeedLevel > oldSpeedLevel) {
+      _restartTimerWithNewSpeed();
+    }
   }
 
   void _gameOver() {
