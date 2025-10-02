@@ -39,7 +39,8 @@ class GameViewModel extends ChangeNotifier {
   AnimationController? bigScoreAnimationController;
   AnimationController? nextLevelAnimationController;
 
-  final Duration _baseDuration = const Duration(milliseconds: 400);
+  final Duration _baseDuration = const Duration(milliseconds: 200);
+
   Duration get _currentDuration {
     int dynamicReduction = (currentLevelIndex * 2).floor();
 

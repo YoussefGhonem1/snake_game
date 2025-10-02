@@ -132,7 +132,7 @@ class _OpenGameLevelsState extends State<OpenGameLevels> {
     GameViewModel gameViewModel,
   ) {
     bool isLevelUnlocked = index < gameViewModel.maxUnlockedLevel;
-    // bool isLevelUnlocked = true;
+   //  bool isLevelUnlocked = true;
     if (!isLevelUnlocked && !_isFreeMode) {
       return InkWell(
         onTap: () {

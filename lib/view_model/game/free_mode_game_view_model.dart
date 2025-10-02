@@ -27,19 +27,8 @@ class FreeModeGameViewModel extends ChangeNotifier {
 
   AnimationController? bigScoreAnimationController;
 
-  final Duration _baseDuration = const Duration(milliseconds: 300);
-
   Duration get _currentDuration {
-    // Speed increases based on score - every 50 points reduces duration by 10ms
-    int speedIncrease = (_numericScore ~/ 35) * 10;
-    int minDuration = 100; // Minimum duration to prevent too fast movement
-    int maxDuration = 300; // Maximum duration (starting speed)
-
-    int currentDuration = max(
-      minDuration,
-      _baseDuration.inMilliseconds - speedIncrease,
-    );
-    return Duration(milliseconds: min(maxDuration, currentDuration));
+    return const Duration(milliseconds: 180);
   }
 
   String score = "000000";
