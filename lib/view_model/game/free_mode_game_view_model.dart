@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snake_game/core/helpers/admob_helper.dart';
 import '../../core/helpers/sound_helper.dart';
 import 'package:snake_game/model/model/level.dart';
+import '../../core/helpers/unity_ads_helper.dart';
 import '../../model/model/game_padding.dart';
 
 class FreeModeGameViewModel extends ChangeNotifier {
@@ -308,9 +308,9 @@ class FreeModeGameViewModel extends ChangeNotifier {
       highScore = _numericScore;
     }
 
-    saveGameProgress().then((_) {
+    saveGameProgress().then((_) async {
       _playGameOverSound();
-      AdMobHelper.showInterstitialAd();
+      await UnityAdsHelper.showInterstitialAd();
       onGameOver();
       //notifyListeners();
     });

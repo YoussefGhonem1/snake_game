@@ -3,16 +3,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
-import 'package:snake_game/core/helpers/admob_helper.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/core/helpers/language_helper.dart';
 import 'package:snake_game/view_model/game/game_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'core/helpers/navigate_helper.dart';
+import 'core/helpers/unity_ads_helper.dart';
 import 'firebase_options.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -29,9 +27,10 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await MobileAds.instance.initialize();
-    AdMobHelper.loadInterstitialAd();
+    // await MobileAds.instance.initialize();
+    // AdMobHelper.loadInterstitialAd();
 
+    await UnityAdsHelper.initUnityAds();
     await GameHelper.instance.initGameHelper();
     Locale savedLocale = await LanguageHelper.instance.getSavedLocale();
 

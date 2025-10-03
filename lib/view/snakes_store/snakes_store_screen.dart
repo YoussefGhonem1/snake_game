@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/game_colors.dart';
-import '../../core/helpers/navigate_helper.dart';
 import '../../model/snake_design.dart';
 import 'data/snake_designs_data.dart';
 import 'services/snakes_store_service.dart';
