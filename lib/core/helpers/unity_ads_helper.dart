@@ -32,7 +32,7 @@ class UnityAdsHelper {
       gameId: _gameId,
       testMode: kDebugMode,
       onComplete: () {
-        print("Unity ads initialized");
+        // Unity ads initialized successfully
         _preloadAd();
       },
     );

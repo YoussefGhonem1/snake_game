@@ -41,7 +41,7 @@ void main() async {
       try {
         await FirebaseMessaging.instance.getToken();
       } catch (e) {
-        print("Firebase messaging error: $e");
+        // Firebase messaging error - handled silently in production
       }
     }
 
@@ -54,9 +54,8 @@ void main() async {
         child: const GameApp(),
       ),
     );
-  } catch (e, stackTrace) {
-    print("App initialization error: $e");
-    print("Stack trace: $stackTrace");
+  } catch (e) {
+    // App initialization error - handled gracefully
     // Run app with error handling
     runApp(
       MaterialApp(
@@ -115,15 +114,15 @@ Future<void> _requestIOSPermission(FirebaseMessaging messaging) async {
     case AuthorizationStatus.provisional:
       break;
     default:
-      print('Permission denied');
+    // Permission denied - handled silently
   }
 }
 
 Future<void> _requestAndroidPermission() async {
   if (await Permission.notification.request().isGranted) {
-    print('Permission granted');
+    // Permission granted
   } else {
-    print('Permission denied');
+    // Permission denied
   }
 }
 
