@@ -1,49 +1,21 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:snake_game/core/constants/route_manager.dart';
 import 'package:snake_game/core/helpers/game_helper.dart';
 import 'package:snake_game/core/helpers/language_helper.dart';
 import 'package:snake_game/view_model/game/game_view_model.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'core/helpers/navigate_helper.dart';
 import 'core/helpers/unity_ads_helper.dart';
-import 'firebase_options.dart';
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-}
 
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     EasyLocalization.ensureInitialized();
-    // final prefs = await SharedPreferences.getInstance();
-    //await prefs.clear();
-
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    // await MobileAds.instance.initialize();
-    // AdMobHelper.loadInterstitialAd();
 
     await UnityAdsHelper.initUnityAds();
     await GameHelper.instance.initGameHelper();
     Locale savedLocale = await LanguageHelper.instance.getSavedLocale();
-
-    await requestNotificationPermission();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    if (!Platform.isIOS) {
-      try {
-        await FirebaseMessaging.instance.getToken();
-      } catch (e) {
-        // Firebase messaging error - handled silently in production
-      }
-    }
 
     runApp(
       EasyLocalization(
@@ -84,45 +56,6 @@ void main() async {
         ),
       ),
     );
-  }
-}
-
-Future<void> requestNotificationPermission() async {
-  final messaging = FirebaseMessaging.instance;
-
-  if (Platform.isIOS) {
-    await _requestIOSPermission(messaging);
-  } else if (Platform.isAndroid) {
-    await _requestAndroidPermission();
-  }
-}
-
-Future<void> _requestIOSPermission(FirebaseMessaging messaging) async {
-  final settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-
-  switch (settings.authorizationStatus) {
-    case AuthorizationStatus.authorized:
-      break;
-    case AuthorizationStatus.provisional:
-      break;
-    default:
-    // Permission denied - handled silently
-  }
-}
-
-Future<void> _requestAndroidPermission() async {
-  if (await Permission.notification.request().isGranted) {
-    // Permission granted
-  } else {
-    // Permission denied
   }
 }
 

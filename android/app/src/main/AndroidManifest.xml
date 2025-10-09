@@ -4,9 +4,6 @@
         android:label="Snakes - الثعابين"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4777940986286395~8422471418"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

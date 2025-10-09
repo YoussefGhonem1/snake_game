@@ -64,13 +64,10 @@ class PrivacyPolicyEnglishScreen extends StatelessWidget {
               ),
               _sectionTitle("3. Data Storage and Security"),
               _sectionContent(
-                "We use Firebase to securely store your data and restore progress on any device.",
+                "We securely store your data locally on your device.",
               ),
               _sectionTitle("4. Third-Party Services"),
-              _sectionContent(
-                "• Firebase (for account and score storage).\n"
-                "• Unity Ads (for ads).",
-              ),
+              _sectionContent("• Unity Ads (for ads)."),
               _sectionTitle("5. User Rights"),
               _sectionContent(
                 "• You can edit your name in Settings > Profile.\n"

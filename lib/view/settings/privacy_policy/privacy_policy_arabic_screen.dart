@@ -64,11 +64,10 @@ class PrivacyPolicyArabicScreen extends StatelessWidget {
               ),
               _sectionTitle("3. تخزين البيانات والأمان"),
               _sectionContent(
-                "نستخدم Firebase لتخزين بياناتك بأمان واستعادتها عبر أي جهاز.",
+                "نقوم بتخزين بياناتك بأمان محليًا على جهازك.",
               ),
               _sectionTitle("4. خدمات الطرف الثالث"),
               _sectionContent(
-                "• Firebase (لتخزين الحساب والنتائج).\n"
                 "• Unity Ads (لعرض الإعلانات).",
               ),
               _sectionTitle("5. حقوق المستخدم"),
