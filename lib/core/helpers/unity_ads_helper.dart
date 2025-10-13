@@ -4,7 +4,8 @@ import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 
 class UnityAdsHelper {
   // App/game IDs
-  static const String _gameId = '5959903';
+  static const String _gameIdAndroid = '5959903';
+  static const String _gameIdIOS = '5959902';
 
   // Placement IDs
   static const String _bannerAndroidId = 'Banner_Android';
@@ -22,14 +23,14 @@ class UnityAdsHelper {
   static String get bannerId => _isIOS ? _bannerIOSId : _bannerAndroidId;
   static String get interstitialId =>
       _isIOS ? _interstitialIOSId : _interstitialAndroidId;
-  static String get gameId => _gameId;
+  static String get gameId => _isIOS ? _gameIdIOS : _gameIdAndroid;
 
   static bool get _isIOS => Platform.isIOS;
 
   /// Initializes Unity Ads and preloads an interstitial ad.
   static Future<void> initUnityAds() async {
     await UnityAds.init(
-      gameId: _gameId,
+      gameId: gameId,
       testMode: kDebugMode,
       onComplete: () {
         // Unity ads initialized successfully
